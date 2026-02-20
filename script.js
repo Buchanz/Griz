@@ -86,7 +86,7 @@ const VERIFIER_STORAGE_KEY = "griz_spotify_verifier_v1";
 const STATE_STORAGE_KEY = "griz_spotify_state_v1";
 const SIDEQUEST_MIX = {
   videoId: "-GFzEz6jpos",
-  cover: "SideQuestCover.jpeg",
+  cover: "assets/SideQuestCover.jpeg",
   albumLabel: "GRiZ — Side Quest (Mix)",
   tracks: [
     { title: "ID1 / In Da Getto (Mixed)", duration: "2:56" },
@@ -478,7 +478,7 @@ async function initializeSpotifyPlayer() {
   }
 
   spotifyPlayer = new window.Spotify.Player({
-    name: "GrizSite Player",
+    name: "assets/GrizSite Player",
     getOAuthToken: async (callback) => {
       const token = await getValidAccessToken();
       callback(token || "");

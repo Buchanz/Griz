@@ -4,27 +4,19 @@
 </p>
 
 <p align="center">
-  <img src="./docs/homepage.png" alt="Home page preview" />
+  <img src="./assets/Griz-Homepage.png" alt="Home page preview" />
 </p>
 
 ## Views
 
 ### Home
-<img src="./docs/homepage.png" alt="Home page" />
+<img src="./assets/Griz-Homepage.png" alt="Home page" />
 
 ### Album
-<img src="./docs/album-page.png" alt="Album page" />
+<img src="./assets/Griz-AlbumPage.png" alt="Album page" />
 
 ### About
-<img src="./docs/about-page.png" alt="About page" />
+<img src="./assets/Griz-AboutPage.png" alt="About page" />
 
 ### Events
-<img src="./docs/events-page.png" alt="Events page" />
-
-## Run
-
-```bash
-python3 -m http.server 5500
-```
-
-Open `http://127.0.0.1:5500`.
+<img src="./assets/Griz-EventsPage.png" alt="Events page" />
