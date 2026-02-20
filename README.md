@@ -1,53 +1,30 @@
-# GRiZ Site
+<p align="center">
+  <h1 align="center">GRiZ</h1>
+  <p align="center">A minimal interactive album experience.</p>
+</p>
 
-Custom single-page GRiZ fan site with:
+<p align="center">
+  <img src="./docs/homepage.png" alt="Home page preview" />
+</p>
 
-- A large animated home carousel
-- Vinyl reveal interaction on centered albums
-- Album detail pages with track lists
-- About and Events overlays
-- Glass-style top navigation
+## Views
 
-## Project Files
+### Home
+<img src="./docs/homepage.png" alt="Home page" />
 
-- `index.html` - Markup for home, overlays, and album pages
-- `styles.css` - All visual styling and animations
-- `script.js` - Carousel logic, overlay transitions, navigation behavior
-- Local image assets - Album covers, vinyl PNGs, logos, profile image
+### Album
+<img src="./docs/album-page.png" alt="Album page" />
 
-## Run Locally
+### About
+<img src="./docs/about-page.png" alt="About page" />
 
-Use any static server. Example:
+### Events
+<img src="./docs/events-page.png" alt="Events page" />
+
+## Run
 
 ```bash
 python3 -m http.server 5500
 ```
 
-Then open:
-
-- `http://127.0.0.1:5500`
-
-## Current Interaction Notes
-
-- Home chevrons navigate left/right across the album timeline.
-- Open buttons launch album detail pages.
-- Detail page chevrons navigate album-to-album.
-- Clicking outside content on detail pages returns to Home with that album centered.
-- Vinyl reveal on Home only triggers when a card is fully centered and hovered.
-
-## Edit Content
-
-To update album metadata, tracks, and ordering:
-
-- Home cards and overlay markup: `index.html`
-- Overlay navigation order and index mapping: `script.js`
-
-## Deploy
-
-This is a static site and can be deployed to:
-
-- GitHub Pages
-- Netlify
-- Vercel (static)
-- Any basic web host
-
+Open `http://127.0.0.1:5500`.
