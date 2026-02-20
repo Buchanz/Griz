@@ -3,10 +3,6 @@
   <p align="center">A minimal interactive album experience.</p>
 </p>
 
-<p align="center">
-  <img src="./assets/Griz-Homepage.png" alt="Home page preview" />
-</p>
-
 ## Views
 
 ### Home
