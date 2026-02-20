@@ -148,24 +148,112 @@ function extractDominantRgb(img) {
   ctx.drawImage(img, 0, 0, sampleSize, sampleSize);
   const data = ctx.getImageData(0, 0, sampleSize, sampleSize).data;
 
-  let r = 0;
-  let g = 0;
-  let b = 0;
-  let count = 0;
+  const candidates = [];
+
+  const rgbToHsl = (r, g, b) => {
+    const rn = r / 255;
+    const gn = g / 255;
+    const bn = b / 255;
+    const max = Math.max(rn, gn, bn);
+    const min = Math.min(rn, gn, bn);
+    const delta = max - min;
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (delta > 0) {
+      s = delta / (1 - Math.abs(2 * l - 1));
+      switch (max) {
+        case rn:
+          h = ((gn - bn) / delta) % 6;
+          break;
+        case gn:
+          h = (bn - rn) / delta + 2;
+          break;
+        default:
+          h = (rn - gn) / delta + 4;
+          break;
+      }
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    return { h, s, l };
+  };
+
+  const hslToRgb = (h, s, l) => {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let rp = 0;
+    let gp = 0;
+    let bp = 0;
+
+    if (h < 60) {
+      rp = c;
+      gp = x;
+    } else if (h < 120) {
+      rp = x;
+      gp = c;
+    } else if (h < 180) {
+      gp = c;
+      bp = x;
+    } else if (h < 240) {
+      gp = x;
+      bp = c;
+    } else if (h < 300) {
+      rp = x;
+      bp = c;
+    } else {
+      rp = c;
+      bp = x;
+    }
+
+    return {
+      r: Math.round((rp + m) * 255),
+      g: Math.round((gp + m) * 255),
+      b: Math.round((bp + m) * 255),
+    };
+  };
+
   for (let i = 0; i < data.length; i += 4) {
     const alpha = data[i + 3];
     if (alpha < 20) continue;
-    r += data[i];
-    g += data[i + 1];
-    b += data[i + 2];
-    count += 1;
-  }
-  if (!count) return null;
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const { s, l } = rgbToHsl(r, g, b);
 
-  const avgR = Math.round(r / count);
-  const avgG = Math.round(g / count);
-  const avgB = Math.round(b / count);
-  return `${avgR}, ${avgG}, ${avgB}`;
+    if (s < 0.16 || l < 0.1 || l > 0.9) continue;
+    const score = s * (1 - Math.abs(l - 0.52));
+    candidates.push({ r, g, b, score });
+  }
+
+  if (!candidates.length) return null;
+
+  candidates.sort((a, b) => b.score - a.score);
+  const picked = candidates.slice(0, Math.min(36, candidates.length));
+  const avg = picked.reduce(
+    (acc, entry) => {
+      acc.r += entry.r;
+      acc.g += entry.g;
+      acc.b += entry.b;
+      return acc;
+    },
+    { r: 0, g: 0, b: 0 }
+  );
+
+  const baseR = Math.round(avg.r / picked.length);
+  const baseG = Math.round(avg.g / picked.length);
+  const baseB = Math.round(avg.b / picked.length);
+  const hsl = rgbToHsl(baseR, baseG, baseB);
+
+  const boosted = hslToRgb(
+    hsl.h,
+    Math.min(0.95, Math.max(0.58, hsl.s * 1.25)),
+    Math.min(0.6, Math.max(0.42, hsl.l * 1.03))
+  );
+
+  return `${boosted.r}, ${boosted.g}, ${boosted.b}`;
 }
 
 function applyImageShadowTint(selector, hostSelector) {
@@ -1070,7 +1158,106 @@ cards.forEach((card, index) => {
   });
 });
 
-// Swipe/drag navigation is intentionally disabled.
+// Home carousel swipe is mobile-only.
+if (albumTrack) {
+  let startX = 0;
+  let startY = 0;
+  let isTouching = false;
+  let ignoreSwipe = false;
+  let startedOnActiveCover = false;
+  let startedCardIndex = -1;
+  const dragIgnoreSelector = ".album-pill, .home-nav";
+
+  const isMobileViewport = () => window.matchMedia("(max-width: 780px)").matches;
+
+  const onStart = (x, y, target) => {
+    startX = x;
+    startY = y;
+    isTouching = true;
+    const startedCard = target?.closest?.(".album-card");
+    startedCardIndex = startedCard ? Number(startedCard.dataset.index) : -1;
+    const startedOnImage = Boolean(target?.closest?.(".album-card > img"));
+    startedOnActiveCover = startedOnImage && startedCardIndex === activeIndex;
+  };
+
+  const onEnd = (x, y) => {
+    if (!isTouching || ignoreSwipe || !isMobileViewport()) {
+      isTouching = false;
+      ignoreSwipe = false;
+      startedOnActiveCover = false;
+      startedCardIndex = -1;
+      return;
+    }
+
+    isTouching = false;
+    const deltaX = x - startX;
+    const deltaY = y - startY;
+    const verticalSwipe = Math.abs(deltaY) > 62 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2;
+
+    if (verticalSwipe && deltaY < 0 && startedOnActiveCover) {
+      const activeCard = cards[activeIndex];
+      const overlay = getOverlayFromCard(activeCard);
+      startedOnActiveCover = false;
+      startedCardIndex = -1;
+      if (overlay) {
+        animateOpenOverlayFromCard(activeCard, overlay);
+      }
+      return;
+    }
+
+    const horizontalSwipe = Math.abs(deltaX) > 52 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+    if (!horizontalSwipe) {
+      startedOnActiveCover = false;
+      startedCardIndex = -1;
+      return;
+    }
+
+    suppressHomeCardClick = true;
+    setTimeout(() => {
+      suppressHomeCardClick = false;
+    }, 220);
+
+    if (deltaX < 0) {
+      goHomeNext();
+      startedOnActiveCover = false;
+      startedCardIndex = -1;
+      return;
+    }
+    goHomePrev();
+    startedOnActiveCover = false;
+    startedCardIndex = -1;
+  };
+
+  albumTrack.addEventListener("touchstart", (event) => {
+    if (!isMobileViewport()) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    ignoreSwipe = Boolean(event.target.closest(dragIgnoreSelector));
+    onStart(touch.clientX, touch.clientY, event.target);
+  });
+
+  albumTrack.addEventListener(
+    "touchmove",
+    (event) => {
+      if (!isTouching || ignoreSwipe || !isMobileViewport()) return;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        event.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  albumTrack.addEventListener("touchend", (event) => {
+    if (!isMobileViewport()) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    onEnd(touch.clientX, touch.clientY);
+  });
+}
 
 aboutLink?.addEventListener("click", (event) => {
   event.preventDefault();
@@ -1216,6 +1403,80 @@ detailNavButtons.forEach((button) => {
 });
 
 detailOverlays.forEach((overlay) => {
+  if (overlay.id !== "aboutOverlay") {
+    let swipeStartX = 0;
+    let swipeStartY = 0;
+    let swiping = false;
+    let lockHorizontal = false;
+    const isMobileViewport = () => window.matchMedia("(max-width: 780px)").matches;
+
+    overlay.addEventListener("touchstart", (event) => {
+      if (!isMobileViewport()) return;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      if (event.target.closest(".detail-tracks, .about-main, .detail-nav, .detail-close")) return;
+      swipeStartX = touch.clientX;
+      swipeStartY = touch.clientY;
+      swiping = true;
+      lockHorizontal = false;
+    });
+
+    overlay.addEventListener(
+      "touchmove",
+      (event) => {
+        if (!swiping || !isMobileViewport()) return;
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+        const deltaX = touch.clientX - swipeStartX;
+        const deltaY = touch.clientY - swipeStartY;
+        if (!lockHorizontal && Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          lockHorizontal = true;
+        }
+        if (lockHorizontal) {
+          event.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+
+    overlay.addEventListener("touchcancel", () => {
+      swiping = false;
+      lockHorizontal = false;
+    });
+
+    overlay.addEventListener("touchend", (event) => {
+      if (!swiping || !isMobileViewport()) return;
+      const touch = event.changedTouches[0];
+      swiping = false;
+      lockHorizontal = false;
+      if (!touch) return;
+      const deltaX = touch.clientX - swipeStartX;
+      const deltaY = touch.clientY - swipeStartY;
+      const horizontalSwipe = Math.abs(deltaX) > 64 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+      if (horizontalSwipe) {
+        if (deltaX < 0) {
+          navigateDetailOverlay(overlay, 1);
+          return;
+        }
+        navigateDetailOverlay(overlay, -1);
+        return;
+      }
+      const verticalSwipe = Math.abs(deltaY) > 70 && Math.abs(deltaY) > Math.abs(deltaX) * 1.25;
+      if (verticalSwipe && deltaY > 0) {
+        animateCloseOverlayToHome(overlay);
+      }
+    });
+  }
+
+  if (overlay.id !== "aboutOverlay") {
+    const detailCover = overlay.querySelector(".detail-cover");
+    detailCover?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      animateCloseOverlayToHome(overlay);
+    });
+  }
+
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) {
       animateCloseOverlayToHome(overlay);

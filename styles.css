@@ -441,7 +441,9 @@ body.carousel-sync .album-card {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 24px 54px rgba(var(--img-shadow-rgb, 10, 12, 18), 0.45);
+  box-shadow:
+    0 28px 62px rgba(var(--img-shadow-rgb, 10, 12, 18), 0.56),
+    0 10px 22px rgba(14, 18, 28, 0.24);
 }
 
 .album-card .vinyl {
@@ -1009,7 +1011,9 @@ body.carousel-ready .album-card.no-transform {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 14px;
-  box-shadow: 0 30px 78px rgba(var(--img-shadow-rgb, 16, 18, 24), 0.34);
+  box-shadow:
+    0 34px 86px rgba(var(--img-shadow-rgb, 16, 18, 24), 0.52),
+    0 12px 24px rgba(14, 18, 28, 0.24);
 }
 
 .detail-title {
@@ -1106,7 +1110,9 @@ body.carousel-ready .album-card.no-transform {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 14px;
-  box-shadow: 0 30px 78px rgba(var(--img-shadow-rgb, 16, 18, 24), 0.34);
+  box-shadow:
+    0 34px 86px rgba(var(--img-shadow-rgb, 16, 18, 24), 0.52),
+    0 12px 24px rgba(14, 18, 28, 0.24);
 }
 
 .about-cover-wrap .about-fact {
@@ -1210,7 +1216,7 @@ body.carousel-ready .album-card.no-transform {
   }
 
   .carousel {
-    --home-cover-size: clamp(200px, 29vw, 330px);
+    --home-cover-size: clamp(220px, 52vw, 340px);
     margin-top: clamp(8rem, 18vh, 11rem);
   }
 
@@ -1224,6 +1230,7 @@ body.carousel-ready .album-card.no-transform {
   }
 
   .home-nav {
+    top: 32%;
     width: 30px;
     height: 58px;
     font-size: 1.05rem;
@@ -1309,7 +1316,7 @@ body.carousel-ready .album-card.no-transform {
   }
 
   .album-card.active.centered-ready:hover .vinyl {
-    transform: translate(-16%, -50%) rotate(6deg);
+    transform: translate(-50%, -50%) rotate(-9deg);
   }
 
   .album-card:not(.active):hover .vinyl {
@@ -1320,14 +1327,42 @@ body.carousel-ready .album-card.no-transform {
     transform: translate(-50%, -50%) rotate(-9deg);
   }
 
+  .album-card .vinyl {
+    display: none;
+  }
+
   .album-label {
     top: calc(100% + 10px);
   }
 
   .event-row {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-    padding: 0.9rem 0.2rem;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "date location"
+      "name name";
+    gap: 0.26rem 0.9rem;
+    padding: 0.82rem 0.25rem;
+    align-items: start;
+  }
+
+  .event-primary {
+    grid-area: date;
+    font-size: clamp(0.76rem, 2.5vw, 0.9rem);
+    line-height: 1.15;
+  }
+
+  .event-row > .event-secondary:nth-child(2) {
+    grid-area: name;
+    font-size: clamp(0.8rem, 2.6vw, 0.94rem);
+    line-height: 1.18;
+  }
+
+  .event-row > .event-secondary:nth-child(3) {
+    grid-area: location;
+    justify-self: end;
+    text-align: right;
+    font-size: clamp(0.74rem, 2.35vw, 0.88rem);
+    line-height: 1.15;
   }
 
   .events-overlay {
@@ -1337,6 +1372,7 @@ body.carousel-ready .album-card.no-transform {
   .events-panel {
     height: auto;
     min-height: calc(100svh - 2rem);
+    padding: clamp(0.6rem, 2vw, 1rem) clamp(0.5rem, 2.4vw, 0.95rem);
   }
 
   .events-list {
@@ -1345,14 +1381,18 @@ body.carousel-ready .album-card.no-transform {
   }
 
   .detail-layout {
-    --cover-size: min(420px, 84vw);
+    --cover-size: min(390px, 82vw);
     grid-template-columns: 1fr;
     align-items: start;
     min-height: 0;
+    margin-top: 44px;
   }
 
   .detail-page {
-    --cover-size: min(420px, 84vw);
+    --cover-size: min(390px, 82vw);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2.2rem;
   }
 
   .detail-cover-wrap {
@@ -1366,40 +1406,55 @@ body.carousel-ready .album-card.no-transform {
 
   .detail-tracks {
     height: min(52svh, var(--cover-size));
+    padding-bottom: 1.8rem;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .detail-close {
-    left: 10px;
+    left: 22px;
     top: 8px;
   }
 
   .detail-nav {
+    top: 30%;
     width: 30px;
     height: 58px;
     font-size: 1.05rem;
   }
 
   .detail-nav-left {
-    left: -14px;
+    left: 14px;
   }
 
   .detail-nav-right {
-    left: calc(var(--cover-size) - 8px);
+    left: calc(var(--cover-size) + 20px);
     right: auto;
   }
 
   .about-layout {
-    --cover-size: min(420px, 84vw);
+    --cover-size: min(390px, 82vw);
     grid-template-columns: 1fr;
     align-items: start;
+    margin-top: 44px;
   }
 
   .about-cover-wrap {
+    min-height: auto;
     place-content: center;
     justify-items: center;
   }
 
+  .about-under {
+    width: var(--cover-size);
+    text-align: left;
+    margin: 0 auto;
+  }
+
   .about-main {
     height: min(52svh, var(--cover-size));
+    padding-bottom: 1.8rem;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
