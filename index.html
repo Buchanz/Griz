@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GRiZ Albums Carousel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Oswald:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="glass-header">
+      <span class="brand-wordmark brand-left-wordmark">GRiZ</span>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#" id="aboutLink">About</a>
+        <a href="#" id="eventsLink">Events</a>
+        <a href="https://griz.lnk.to/listen" id="shopLink" target="_blank" rel="noopener noreferrer">Listen</a>
+      </nav>
+      <img class="corner-logo logo-right" src="Griz Logo.jpg" alt="GRiZ logo" />
+    </header>
+
+    <main class="stage">
+      <section class="carousel" aria-label="GRiZ album carousel">
+        <button class="home-nav home-nav-left" id="homePrev" aria-label="Previous album">&#10094;</button>
+        <button class="home-nav home-nav-right" id="homeNext" aria-label="Next album">&#10095;</button>
+        <div class="album-track" id="albumTrack">
+          <article class="album-card" data-index="0" style="--vinyl-art: url('SideQuestVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="SideQuestCover.jpeg" alt="Side Quest album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Side Quest</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2024 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="sidequestOverlay" aria-label="Open Side Quest page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="1" data-album="ouroboros" style="--vinyl-art: url('OuroborosVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="OuroborosCover.jpg" alt="Ouroboros album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Ouroboros</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2023 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="ouroOverlay" aria-label="Open Ouroboros page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="2" style="--vinyl-art: url('ChasingGoldenHourPT4Vinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="ChasingGoldenHourPT4Cover.jpg" alt="Chasing The Golden Hour Pt. 4 cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Chasing The Golden Hour Pt. 4</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2022 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="cgh4Overlay" aria-label="Open Chasing The Golden Hour Pt. 4 page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="3" style="--vinyl-art: url('RainbowBrainVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="RainbowBrainCover.jpeg" alt="Rainbow Brain album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Rainbow Brain</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2021 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="rainbowOverlay" aria-label="Open Rainbow Brain page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="4" style="--vinyl-art: url('ChasingTheGoldenHourPT3Vinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="ChasingTheGOldenHourPT3Cover.jpg" alt="Chasing The Golden Hour Pt. 3 cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Chasing The Golden Hour Pt. 3</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2020 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="cgh3Overlay" aria-label="Open Chasing The Golden Hour Pt. 3 page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="5" style="--vinyl-art: url('OuroborosVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="RideWavesCover.jpeg" alt="Ride Waves cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Ride Waves</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2019 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="ridewavesOverlay" aria-label="Open Ride Waves page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="6" style="--vinyl-art: url('GoodWillPrevialVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="GRiZ-Good-Will-Prevail.png" alt="Good Will Prevail album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Good Will Prevail</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Bass • 2016 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="goodwillOverlay" aria-label="Open Good Will Prevail page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="7" style="--vinyl-art: url('SayItLoadVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="GRiZ-Say-It-Loud.png" alt="Say It Loud album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Say It Loud</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Bass • 2015 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="sayitloudOverlay" aria-label="Open Say It Loud page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="8" style="--vinyl-art: url('RebelEraVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="Redel_Era_album_art.jpg" alt="Rebel Era album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Rebel Era</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2013 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="rebeleraOverlay" aria-label="Open Rebel Era page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="9" style="--vinyl-art: url('MadLiberationVinyl.png')">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="MadLiberationCover.jpeg" alt="Mad Liberation album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Mad Liberation</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2013 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="madOverlay" aria-label="Open Mad Liberation page">Open</button>
+            </div>
+          </article>
+
+        </div>
+      </section>
+    </main>
+
+    <section class="detail-overlay hidden-overlay" id="aboutOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close About page">Back</button>
+
+        <div class="about-layout">
+          <div class="about-cover-wrap">
+            <img class="about-cover" src="GrizProfile.jpg" alt="About GRiZ profile image" />
+            <div class="about-under">
+              <span class="album-title">GRiZ</span>
+              <span class="album-artist">Southfield, MI, United States</span>
+              <span class="album-meta">Electronic • May 31, 1990</span>
+            </div>
+          </div>
+
+          <div class="about-main">
+            <h2>About GRiZ</h2>
+            <p>
+              Self-described "future funk" DJ and producer GRiZ blends dubstep, house, soul, and other sounds
+              into a danceable hybrid that he tops off with live saxophone.
+            </p>
+            <ul>
+              <li>
+                Born Grant Richard Kwiecinski, GRiZ grew up in the suburbs of Detroit and began playing
+                saxophone after first taking up the oboe. He was good enough to play first-chair sax in his school's band.
+              </li>
+              <li>
+                After honing his skills at and eventually dropping out of Michigan State University, GRiZ released his debut
+                album, <em>End of the World Party</em>, in 2011.
+              </li>
+              <li>
+                He broke through with his 2016 album <em>Good Will Prevail</em>, which debuted atop the iTunes Electronic chart.
+                It also cracked the Billboard 200.
+              </li>
+              <li>
+                His 2019 bass single "Griztronics," a collaboration with new-age dubstep maestro Subtronics,
+                was a festival favourite the year it came out.
+              </li>
+              <li>
+                GRiZ has been a staunch advocate for LGBTQ+ representation in music, and in June 2020, he teamed up
+                with freeform bass DJ and producer Wreckno for the Pride anthem "Medusa."
+              </li>
+              <li>
+                Since 2013, GRiZ has periodically performed alongside the electro-funk outfits Big Gigantic and Gramatik
+                in the supergroup Big Grizmatik.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="events-overlay hidden-overlay" id="eventsOverlay" aria-hidden="true">
+      <div class="events-panel">
+        <div class="events-header">
+          <button class="overlay-close" id="closeEvents" aria-label="Close events overlay">Close</button>
+          <h2>Events</h2>
+        </div>
+
+        <div class="events-list">
+          <article class="event-row">
+            <div class="event-primary">FEB 20, 2026 - FEB 22, 2026</div>
+            <div class="event-secondary">EDC Mexico</div>
+            <div class="event-secondary">Mexico City, CDMX</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAR 13, 2026</div>
+            <div class="event-secondary">The Armory</div>
+            <div class="event-secondary">Minneapolis, MN</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAR 14, 2026</div>
+            <div class="event-secondary">The Armory</div>
+            <div class="event-secondary">Minneapolis, MN</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAR 19, 2026 - MAR 22, 2026</div>
+            <div class="event-secondary">Okeechobee Music & Arts Festival</div>
+            <div class="event-secondary">Okeechobee, FL</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAR 27, 2026 - MAR 28, 2026</div>
+            <div class="event-secondary">Beyond Wonderland</div>
+            <div class="event-secondary">San Bernardino, CA</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAY 15, 2026 - MAY 17, 2026</div>
+            <div class="event-secondary">EDC - Las Vegas</div>
+            <div class="event-secondary">Las Vegas, NV</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAY 23, 2026 - MAY 24, 2026</div>
+            <div class="event-secondary">GRIZTRONICS GORGE</div>
+            <div class="event-secondary">George, WA</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAY 29, 2026 - MAY 30, 2026</div>
+            <div class="event-secondary">Breakaway Ohio</div>
+            <div class="event-secondary">Columbus, OH</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">MAY 29, 2026</div>
+            <div class="event-secondary">ILLfest</div>
+            <div class="event-secondary">Austin, TX</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">JUN 12, 2026</div>
+            <div class="event-secondary">Bonnaroo</div>
+            <div class="event-secondary">Manchester, TN</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">JUN 25, 2026 - JUN 28, 2026</div>
+            <div class="event-secondary">Electric Forest Festival</div>
+            <div class="event-secondary">Rothbury, MI</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">JUN 26, 2026 - JUN 28, 2026</div>
+            <div class="event-secondary">Escapade Music Festival</div>
+            <div class="event-secondary">Ottawa, Canada</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">JUL 3, 2026 - JUL 4, 2026</div>
+            <div class="event-secondary">FVDED In The Park</div>
+            <div class="event-secondary">Holland Park, BC</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">JUL 4, 2026</div>
+            <div class="event-secondary">Badlands Music Festival</div>
+            <div class="event-secondary">Calgary, AB</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">SEP 4, 2026 - SEP 6, 2026</div>
+            <div class="event-secondary">North Coast</div>
+            <div class="event-secondary">Bridgeview, IL</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">SEP 11, 2026</div>
+            <div class="event-secondary">Dancefestopia</div>
+            <div class="event-secondary">LaCygne, KS</div>
+          </article>
+          <article class="event-row">
+            <div class="event-primary">OCT 9, 2026 - OCT 11, 2026</div>
+            <div class="event-secondary">Seven Stars Festival</div>
+            <div class="event-secondary">Arrington, VA</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="ouroOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Ouroboros page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="OuroborosCover.jpg" alt="Ouroboros cover" />
+            <p class="detail-title">Ouroboros</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2023 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Takecare</span><span>1:09</span></li>
+            <li><span>Drop In</span><span>2:03</span></li>
+            <li><span>In This World</span><span>4:24</span></li>
+            <li><span>Fading</span><span>2:16</span></li>
+            <li><span>Falling Flying</span><span>3:43</span></li>
+            <li><span>Funkish</span><span>0:12</span></li>
+            <li><span>Knucklepuck</span><span>3:22</span></li>
+            <li><span>Better From Here</span><span>3:37</span></li>
+            <li><span>Close To You</span><span>2:57</span></li>
+            <li><span>Back To Earth</span><span>3:10</span></li>
+            <li><span>Let It In</span><span>2:31</span></li>
+            <li><span>Remember This</span><span>3:44</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="cgh4Overlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Chasing The Golden Hour Pt. 4 page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="ChasingGoldenHourPT4Cover.jpg" alt="Chasing The Golden Hour Pt. 4 cover" />
+            <p class="detail-title">Chasing The Golden Hour Pt. 4</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2022 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Mystik Dub</span><span>3:38</span></li>
+            <li><span>Your Light</span><span>3:58</span></li>
+            <li><span>Keep Bouncin'</span><span>4:10</span></li>
+            <li><span>Airplane Mode</span><span>2:13</span></li>
+            <li><span>Carry On</span><span>3:07</span></li>
+            <li><span>Gooey</span><span>3:15</span></li>
+            <li><span>On a High</span><span>4:07</span></li>
+            <li><span>4 Your Mind</span><span>4:15</span></li>
+            <li><span>Sundown</span><span>5:24</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="goodwillOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Good Will Prevail page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="GRiZ-Good-Will-Prevail.png" alt="Good Will Prevail cover" />
+            <p class="detail-title">Good Will Prevail</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Bass • 2016 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Wicked<span class="track-sub">GRiZ and Eric Krasno</span></span><span>5:54</span></li>
+            <li><span>Can't Hold Me Down<span class="track-sub">GRiZ and Tash Neal</span></span><span>3:37</span></li>
+            <li><span>My Friends and I<span class="track-sub">GRiZ and Probcause</span></span><span>5:12</span></li>
+            <li><span>I Don't Mind<span class="track-sub">GRiZ, Sunsquabi, Artifakts, and iDA HAWK</span></span><span>4:37</span></li>
+            <li><span>Good Times Roll<span class="track-sub">GRiZ and Big Gigantic</span></span><span>4:05</span></li>
+            <li><span>Feelin' Fine</span><span>4:25</span></li>
+            <li><span>PS GFY<span class="track-sub">GRiZ and Cherub</span></span><span>4:15</span></li>
+            <li><span>What We've Become<span class="track-sub">GRiZ, Cory Enemy, and Nat Dunn</span></span><span>4:12</span></li>
+            <li><span>If There Ever Comes a Day<span class="track-sub">GRiZ, Eli "Paperboy" Reed, and Louis Futon</span></span><span>3:24</span></li>
+            <li><span>Rather Be Free<span class="track-sub">GRiZ and Muzzy Bearr</span></span><span>4:48</span></li>
+            <li><span>Gotta Push On<span class="track-sub">GRiZ, Eric Krasno, and Brasstracks</span></span><span>4:34</span></li>
+            <li><span>Before I Go<span class="track-sub">GRiZ and Leo Napier</span></span><span>7:08</span></li>
+            <li><span>Driftin'<span class="track-sub">GRiZ and Son Little</span></span><span>3:13</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="sayitloudOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Say It Loud page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="GRiZ-Say-It-Loud.png" alt="Say It Loud cover" />
+            <p class="detail-title">Say It Loud</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Bass • 2015 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>The Anthem (feat. Mike Avery)</span><span>4:49</span></li>
+            <li><span>Funk Party</span><span>4:52</span></li>
+            <li><span>Get Down (feat. SunSquabi & Manic Focus)</span><span>5:35</span></li>
+            <li><span>Need This (feat. The Floozies)</span><span>4:06</span></li>
+            <li><span>It's All Good (feat. Jessie Arlen)</span><span>5:43</span></li>
+            <li><span>A Fine Way to Die (feat. Leo Napier)</span><span>6:41</span></li>
+            <li><span>For The Love (feat. Talib Kweli)</span><span>4:41</span></li>
+            <li><span>Stop Trippin' (feat. iDA HAWK)</span><span>3:51</span></li>
+            <li><span>Headspace (Time Is On Our Side)</span><span>4:21</span></li>
+            <li><span>Turnin' (feat. Leo Napier)</span><span>3:25</span></li>
+            <li><span>Take It High (feat. Ivan Neville)</span><span>4:09</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="rebeleraOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Rebel Era page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="Redel_Era_album_art.jpg" alt="Rebel Era cover" />
+            <p class="detail-title">Rebel Era</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2013 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Hard Times</span><span>5:26</span></li>
+            <li><span>Feel the Love</span><span>6:13</span></li>
+            <li><span>Dtw to Dia (The Travels of Mr. B) [The Travels of Mr. B]</span><span>5:31</span></li>
+            <li><span>Simple (feat. The Floozies)</span><span>4:57</span></li>
+            <li><span>Dance With Me</span><span>5:14</span></li>
+            <li><span>Do My Thang</span><span>2:11</span></li>
+            <li><span>Too Young for Tragedy Pt. II</span><span>7:39</span></li>
+            <li><span>Crime in the City</span><span>5:38</span></li>
+            <li><span>Keep the Dream</span><span>9:01</span></li>
+            <li><span>How It Ends (feat. Dominic Lalli)</span><span>3:52</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="madOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Mad Liberation page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="MadLiberationCover.jpeg" alt="Mad Liberation cover" />
+            <p class="detail-title">Mad Liberation</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2013 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Too Young for Tragedy</span><span>7:53</span></li>
+            <li><span>Smash the Funk</span><span>6:50</span></li>
+            <li><span>Rock n Roll</span><span>5:06</span></li>
+            <li><span>Blastaa</span><span>4:29</span></li>
+            <li><span>Live on Arrival</span><span>5:44</span></li>
+            <li><span>Where's the Love</span><span>6:13</span></li>
+            <li><span>Mr. B</span><span>5:48</span></li>
+            <li><span>Fall in Love Too Fast</span><span>4:20</span></li>
+            <li><span>Better Than I've Ever Been</span><span>6:18</span></li>
+            <li><span>Wonder Why</span><span>7:41</span></li>
+            <li><span>The Future Is Now</span><span>6:10</span></li>
+            <li><span>See You Again</span><span>6:29</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="rainbowOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Rainbow Brain page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="RainbowBrainCover.jpeg" alt="Rainbow Brain cover" />
+            <p class="detail-title">Rainbow Brain</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2021 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Chromesthesia</span><span>0:53</span></li>
+            <li><span>Astro Funk</span><span>3:15</span></li>
+            <li><span>Vibe Check</span><span>2:50</span></li>
+            <li><span>Take-em-back(em)</span><span>0:12</span></li>
+            <li><span>Burn Up The Floor</span><span>3:46</span></li>
+            <li><span>Got-it-like(it)</span><span>0:13</span></li>
+            <li><span>Tie-Dye Sky</span><span>3:09</span></li>
+            <li><span>ROYGBiV-interlude(interlude)</span><span>1:02</span></li>
+            <li><span>Rainbow Brain</span><span>4:21</span></li>
+            <li><span>2 4</span><span>0:13</span></li>
+            <li><span>Harmony</span><span>4:29</span></li>
+            <li><span>Gold</span><span>3:34</span></li>
+            <li><span>Daily Routine</span><span>3:29</span></li>
+            <li><span>Other Side of Jupiter</span><span>4:39</span></li>
+            <li><span>Wu-wei(wei)</span><span>0:26</span></li>
+            <li><span>Infinite</span><span>3:38</span></li>
+            <li><span>You-are.i-can(are.i)</span><span>0:26</span></li>
+            <li><span>Feel It All</span><span>4:32</span></li>
+            <li><span>4 2</span><span>0:29</span></li>
+            <li><span>548 MAC ave</span><span>3:26</span></li>
+            <li><span>P.s.</span><span>0:43</span></li>
+            <li><span>Another World</span><span>4:21</span></li>
+            <li><span>The Echo Tree</span><span>1:46</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="cgh3Overlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Chasing The Golden Hour Pt. 3 page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="ChasingTheGOldenHourPT3Cover.jpg" alt="Chasing The Golden Hour Pt. 3 cover" />
+            <p class="detail-title">Chasing The Golden Hour Pt. 3</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2020 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Know Time Like The Present</span><span>2:36</span></li>
+            <li><span>Gettin High, Havin Fun</span><span>3:36</span></li>
+            <li><span>Won't Be Gone Long</span><span>3:45</span></li>
+            <li><span>Solo</span><span>3:29</span></li>
+            <li><span>Nights in Shibuya</span><span>3:20</span></li>
+            <li><span>Koh Samui</span><span>2:47</span></li>
+            <li><span>Sweet</span><span>3:57</span></li>
+            <li><span>Floating</span><span>3:25</span></li>
+            <li><span>Where Will I Go</span><span>3:17</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="ridewavesOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Ride Waves page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="RideWavesCover.jpeg" alt="Ride Waves cover" />
+            <p class="detail-title">Ride Waves</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2019 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Can't Get Enough</span><span>3:21</span></li>
+            <li><span>I'm Good</span><span>3:50</span></li>
+            <li><span>My Friends and I Pt. 2</span><span>3:52</span></li>
+            <li><span>Cruise Control</span><span>4:33</span></li>
+            <li><span>A New Day</span><span>3:29</span></li>
+            <li><span>The Prayer</span><span>6:03</span></li>
+            <li><span>It Gets Better</span><span>4:03</span></li>
+            <li><span>Bustin' Out</span><span>3:17</span></li>
+            <li><span>Caught Up</span><span>3:45</span></li>
+            <li><span>Maybe</span><span>5:07</span></li>
+            <li><span>The Escape</span><span>5:11</span></li>
+            <li><span>Mercy</span><span>4:06</span></li>
+            <li><span>Barrel Of A Gun</span><span>5:39</span></li>
+            <li><span>Find My Own Way</span><span>5:03</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="sidequestOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Side Quest page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="SideQuestCover.jpeg" alt="Side Quest cover" />
+            <p class="detail-title">Side Quest</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2024 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>ID1 (from SIDE QUEST, Vol. 1) / In Da Getto (Mixed)<span class="track-sub">J Balvin and Skrillex</span></span><span>2:56</span></li>
+            <li><span>2-step Nassau (Mixed)</span><span>2:24</span></li>
+            <li><span>Oh (feat. Ludacris) [GRiZ Remix] [Mixed]<span class="track-sub">Ciara</span></span><span>2:03</span></li>
+            <li><span>ID2 (from SIDE QUEST, Vol. 1) / BEIGE BUTTER (feat. Le$) [Mixed]<span class="track-sub">Ramirez</span></span><span>1:50</span></li>
+            <li><span>ID3 (from SIDE QUEST, Vol. 1) [Mixed]<span class="track-sub">ID</span></span><span>1:32</span></li>
+            <li><span>Cockney Thug (GRiZ Remix) [Mixed]<span class="track-sub">Rusko</span></span><span>2:05</span></li>
+            <li><span>ID4 (from SIDE QUEST, Vol. 1) / Fever (Mixed)<span class="track-sub">Little Simz</span></span><span>2:58</span></li>
+            <li><span>ID5 (from SIDE QUEST, Vol. 1) [Mixed]<span class="track-sub">ID</span></span><span>3:02</span></li>
+            <li><span>ID6 (from SIDE QUEST, Vol. 1) / Style / HAWT (GRiZ Remix) [Mixed]<span class="track-sub">Taiki Nulight, Capo Lee, P Money, Oski, and Hydraulix</span></span><span>2:07</span></li>
+            <li><span>Feeling Good / Are You That Somebody (GRiZ Remix) [Mixed]<span class="track-sub">Nina Simone and Aaliyah</span></span><span>3:29</span></li>
+            <li><span>Weekend (feat. Miguel) [GRiZ Remix] [Mixed]<span class="track-sub">Mac Miller</span></span><span>2:52</span></li>
+            <li><span>Love Sensation (GRiZ Remix) [Mixed]<span class="track-sub">Loleatta Holloway</span></span><span>1:39</span></li>
+            <li><span>Gonna Make You Sweat (Everybody Dance Now) [feat. Freedom Williams] / BEATS FOR THE UNDERGROUND (GRiZ Remix) [Mixed]<span class="track-sub">Mau P and C+C Music Factory</span></span><span>2:21</span></li>
+            <li><span>Show Out (GRiZ Remix) [Mixed]<span class="track-sub">Skepta, Pop Smoke, and Kid Cudi</span></span><span>1:37</span></li>
+            <li><span>I Remember (GRiZ Remix) [Mixed]<span class="track-sub">Kaskade and deadmau5</span></span><span>3:47</span></li>
+            <li><span>Low Rider (GRiZ Remix) / I Get the Bag (feat. Migos) [Mixed]<span class="track-sub">War and Gucci Mane</span></span><span>2:22</span></li>
+            <li><span>Peso (GRiZ Remix) [Mixed]<span class="track-sub">A$AP Rocky</span></span><span>2:21</span></li>
+            <li><span>Diva (GRiZ Remix) [Mixed]<span class="track-sub">Wreckno</span></span><span>1:33</span></li>
+            <li><span>Beba (GRiZ Remix) / HIGHJACK (feat. Jessica Pratt) [Mixed]<span class="track-sub">Pantyraid and A$AP Rocky</span></span><span>1:34</span></li>
+            <li><span>FE!N (feat. Playboi Carti) [GRiZ Remix] [Mixed]<span class="track-sub">Travis Scott</span></span><span>1:14</span></li>
+            <li><span>Narcos (GRiZ Remix) [Mixed]<span class="track-sub">Migos</span></span><span>2:17</span></li>
+            <li><span>Go Back (GRiZ Remix) [Mixed]<span class="track-sub">Julia Church, John Summit, and Sub Focus</span></span><span>3:19</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
