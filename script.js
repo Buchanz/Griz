@@ -11,6 +11,7 @@ const homePrev = document.getElementById("homePrev");
 const homeNext = document.getElementById("homeNext");
 const albumTrack = document.getElementById("albumTrack");
 const aboutOverlay = document.getElementById("aboutOverlay");
+const eventsList = eventsOverlay?.querySelector(".events-list") || null;
 const playPauseBtn = document.getElementById("playPauseBtn");
 const prevTrackBtn = document.getElementById("prevTrackBtn");
 const nextTrackBtn = document.getElementById("nextTrackBtn");
@@ -68,6 +69,7 @@ let currentYouTubeTrackIndex = -1;
 let detailOverlaySwitching = false;
 let carouselSyncTimer = null;
 let centeredReadyTimer = null;
+let eventsRefreshTimer = null;
 
 const SPOTIFY_CONFIG = {
   clientId: "6789ef7450fb41dc939104ee025bd65c",
@@ -285,6 +287,76 @@ function updateProgressFill(value) {
   if (!playerProgress) return;
   const pct = Math.max(0, Math.min(100, value));
   playerProgress.style.setProperty("--progress-pct", `${pct}%`);
+}
+
+function parseEventDateToken(rawToken) {
+  if (!rawToken) return null;
+  const token = rawToken.trim().toUpperCase();
+  const match = token.match(/^([A-Z]{3})\s+(\d{1,2}),\s*(\d{4})$/);
+  if (!match) return null;
+
+  const monthMap = {
+    JAN: 0,
+    FEB: 1,
+    MAR: 2,
+    APR: 3,
+    MAY: 4,
+    JUN: 5,
+    JUL: 6,
+    AUG: 7,
+    SEP: 8,
+    OCT: 9,
+    NOV: 10,
+    DEC: 11,
+  };
+
+  const month = monthMap[match[1]];
+  if (month === undefined) return null;
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+  if (!Number.isFinite(day) || !Number.isFinite(year)) return null;
+
+  return new Date(year, month, day);
+}
+
+function getEventEndDate(row) {
+  const dateNode = row?.querySelector(".event-primary");
+  const raw = dateNode?.textContent?.trim();
+  if (!raw) return null;
+
+  const parts = raw.split(/\s*-\s*/).map((piece) => piece.trim()).filter(Boolean);
+  const lastToken = parts[parts.length - 1] || "";
+  return parseEventDateToken(lastToken) || parseEventDateToken(parts[0] || "");
+}
+
+function refreshEventsByDate() {
+  if (!eventsList) return;
+  const rows = Array.from(eventsList.querySelectorAll(".event-row"));
+  if (!rows.length) return;
+
+  const now = new Date();
+  let visibleCount = 0;
+
+  rows.forEach((row) => {
+    const endDate = getEventEndDate(row);
+    if (!endDate) {
+      row.hidden = false;
+      visibleCount += 1;
+      return;
+    }
+    const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+    const isPast = endOfDay < now;
+    row.hidden = isPast;
+    if (!isPast) visibleCount += 1;
+  });
+
+  eventsList.style.gridTemplateRows = `repeat(${Math.max(visibleCount, 1)}, minmax(0, 1fr))`;
+}
+
+function startEventsAutoRefresh() {
+  refreshEventsByDate();
+  if (eventsRefreshTimer) window.clearInterval(eventsRefreshTimer);
+  eventsRefreshTimer = window.setInterval(refreshEventsByDate, 60 * 1000);
 }
 
 function setDefaultPlayerMeta() {
@@ -1349,6 +1421,7 @@ spotifyAuthBtn?.addEventListener("click", () => {
 
 eventsLink?.addEventListener("click", (event) => {
   event.preventDefault();
+  refreshEventsByDate();
   showOverlay(eventsOverlay);
 });
 
@@ -1520,6 +1593,7 @@ async function initSpotify() {
 
 initSpotify().catch((error) => console.error(error));
 render();
+startEventsAutoRefresh();
 requestAnimationFrame(() => {
   document.body.classList.add("carousel-ready");
 });
