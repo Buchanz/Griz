@@ -31,6 +31,16 @@ body {
   overflow: hidden;
 }
 
+body.theme-dark {
+  --bg-1: #0f131a;
+  --bg-2: #0f131a;
+  --panel: #151b24;
+  --text: #e6edf5;
+  --muted: #9aa7b6;
+  background: #0f131a;
+  color: #e6edf5;
+}
+
 .glass-header {
   position: fixed;
   top: 24px;
@@ -106,11 +116,23 @@ body {
 
 .bottom-nav {
   position: fixed;
-  left: 50%;
-  bottom: 14px;
-  transform: translateX(-50%);
+  top: 24px;
+  right: 24px;
+  left: auto;
+  bottom: auto;
+  transform: none;
   z-index: 31;
-  width: min(520px, 92vw);
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.42rem;
+}
+
+.bottom-nav a {
+  width: 100%;
+  text-align: left;
 }
 
 .top-nav a {
@@ -127,6 +149,7 @@ body {
   color: #252a2d;
   transform: scale(1.12);
 }
+
 
 .top-left-logo {
   width: clamp(48px, 6vw, 70px);
@@ -559,11 +582,13 @@ body.carousel-sync .album-card {
 
 .album-card.active {
   z-index: 3;
-  opacity: 1;
+  --card-opacity: 1;
+  --card-blur: 0px;
+  opacity: var(--card-opacity);
   --tx: 0;
   --sc: 1;
   transform: translate(-50%, -50%) translateX(0) scale(1);
-  filter: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.active .vinyl {
@@ -588,52 +613,63 @@ body.carousel-sync .album-card {
 
 .album-card.left {
   z-index: 2;
-  opacity: 1;
+  --card-opacity: 0.86;
+  --card-blur: 1.2px;
+  opacity: var(--card-opacity);
   --tx: calc(-1 * var(--near-offset, 138%));
   --from-tx: calc(-1 * var(--near-in-offset, 184%));
   --out-tx: calc(-1 * var(--near-out-offset, 172%));
   --sc: 0.74;
   transform: translate(-50%, -50%) translateX(calc(-1 * var(--near-offset, 138%))) scale(0.74);
-  filter: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.right {
   z-index: 2;
-  opacity: 1;
+  --card-opacity: 0.86;
+  --card-blur: 1.2px;
+  opacity: var(--card-opacity);
   --tx: var(--near-offset, 138%);
   --from-tx: var(--near-in-offset, 184%);
   --out-tx: var(--near-out-offset, 172%);
   --sc: 0.74;
   transform: translate(-50%, -50%) translateX(var(--near-offset, 138%)) scale(0.74);
-  filter: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.left-far {
   z-index: 1;
-  opacity: 1;
+  --card-opacity: 0.62;
+  --card-blur: 2.6px;
+  opacity: var(--card-opacity);
   --tx: calc(-1 * var(--far-offset, 225%));
   --from-tx: calc(-1 * var(--far-in-offset, 286%));
   --out-tx: calc(-1 * var(--far-out-offset, 264%));
   --sc: 0.56;
   transform: translate(-50%, -50%) translateX(calc(-1 * var(--far-offset, 225%))) scale(0.56);
-  filter: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.right-far {
   z-index: 1;
-  opacity: 1;
+  --card-opacity: 0.62;
+  --card-blur: 2.6px;
+  opacity: var(--card-opacity);
   --tx: var(--far-offset, 225%);
   --from-tx: var(--far-in-offset, 286%);
   --out-tx: var(--far-out-offset, 264%);
   --sc: 0.56;
   transform: translate(-50%, -50%) translateX(var(--far-offset, 225%)) scale(0.56);
-  filter: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.hidden {
+  --card-opacity: 0;
+  --card-blur: 3px;
   opacity: 0;
   transform: translate(-50%, -50%) translateX(var(--tx)) scale(calc(var(--sc) * 0.9));
   pointer-events: none;
+  filter: blur(var(--card-blur));
 }
 
 .album-card.no-transform {
@@ -656,12 +692,12 @@ body.carousel-ready .album-card.no-transform {
   from {
     opacity: 0;
     transform: translate(-50%, -50%) translateX(var(--tx)) scale(calc(var(--sc) * 0.96));
-    filter: blur(1.8px);
+    filter: blur(calc(var(--card-blur, 0px) + 2px));
   }
   to {
-    opacity: 1;
+    opacity: var(--card-opacity, 1);
     transform: translate(-50%, -50%) translateX(var(--tx)) scale(var(--sc));
-    filter: blur(0);
+    filter: blur(var(--card-blur, 0px));
   }
 }
 
@@ -679,12 +715,12 @@ body.carousel-ready .album-card.no-transform {
   from {
     opacity: 0;
     transform: translate(-50%, -50%) translateX(calc(var(--tx) - 46vw)) scale(calc(var(--sc) * 0.96));
-    filter: blur(1.8px);
+    filter: blur(calc(var(--card-blur, 0px) + 2px));
   }
   to {
-    opacity: 1;
+    opacity: var(--card-opacity, 1);
     transform: translate(-50%, -50%) translateX(var(--tx)) scale(var(--sc));
-    filter: blur(0);
+    filter: blur(var(--card-blur, 0px));
   }
 }
 
@@ -692,25 +728,25 @@ body.carousel-ready .album-card.no-transform {
   from {
     opacity: 0;
     transform: translate(-50%, -50%) translateX(calc(var(--tx) + 46vw)) scale(calc(var(--sc) * 0.96));
-    filter: blur(1.8px);
+    filter: blur(calc(var(--card-blur, 0px) + 2px));
   }
   to {
-    opacity: 1;
+    opacity: var(--card-opacity, 1);
     transform: translate(-50%, -50%) translateX(var(--tx)) scale(var(--sc));
-    filter: blur(0);
+    filter: blur(var(--card-blur, 0px));
   }
 }
 
 @keyframes puff-out {
   from {
-    opacity: 1;
+    opacity: var(--card-opacity, 1);
     transform: translate(-50%, -50%) translateX(var(--tx)) scale(var(--sc));
-    filter: blur(0);
+    filter: blur(var(--card-blur, 0px));
   }
   to {
     opacity: 0;
     transform: translate(-50%, -50%) translateX(var(--out-tx, var(--tx))) scale(calc(var(--sc) * 0.96));
-    filter: blur(1.8px);
+    filter: blur(calc(var(--card-blur, 0px) + 2px));
   }
 }
 
@@ -727,6 +763,49 @@ body.carousel-ready .album-card.no-transform {
   backdrop-filter: blur(0px);
   transition: opacity 0.34s ease, backdrop-filter 0.34s ease, background 0.34s ease;
   overflow: hidden;
+}
+
+body.theme-dark .stage {
+  background: #0f131a;
+}
+
+body.theme-dark .top-nav a {
+  color: #95a3b3;
+}
+
+body.theme-dark .top-nav a:hover {
+  color: #edf3fa;
+}
+
+body.theme-dark .detail-overlay {
+  background: #0f131a;
+  color: #e6edf5;
+}
+
+body.theme-dark .events-overlay {
+  background: rgba(13, 17, 24, 0.94);
+}
+
+body.theme-dark .events-panel,
+body.theme-dark .event-primary,
+body.theme-dark .detail-title,
+body.theme-dark .about-main h2 {
+  color: #e6edf5;
+}
+
+body.theme-dark .event-secondary,
+body.theme-dark .detail-subtitle,
+body.theme-dark .detail-tracks li span:last-child,
+body.theme-dark .about-main p,
+body.theme-dark .about-main li,
+body.theme-dark .about-fact strong,
+body.theme-dark .album-meta {
+  color: #9aa7b6;
+}
+
+body.theme-dark .detail-tracks li {
+  color: #d9e1eb;
+  border-bottom-color: #3a4554;
 }
 
 .hidden-overlay {
@@ -1236,6 +1315,16 @@ body.carousel-ready .album-card.no-transform {
     bottom: auto;
     left: 50%;
     transform: translateX(-50%);
+    right: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: clamp(0.7rem, 2.4vw, 1.2rem);
+  }
+
+  .bottom-nav a {
+    width: auto;
+    text-align: center;
   }
 
   .carousel {

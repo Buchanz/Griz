@@ -70,6 +70,9 @@ let detailOverlaySwitching = false;
 let carouselSyncTimer = null;
 let centeredReadyTimer = null;
 let eventsRefreshTimer = null;
+let homeTransitioning = false;
+const HOME_TRANSITION_MS = 620;
+let homeRenderCycle = 0;
 
 const SPOTIFY_CONFIG = {
   clientId: "6789ef7450fb41dc939104ee025bd65c",
@@ -288,6 +291,7 @@ function updateProgressFill(value) {
   const pct = Math.max(0, Math.min(100, value));
   playerProgress.style.setProperty("--progress-pct", `${pct}%`);
 }
+
 
 function parseEventDateToken(rawToken) {
   if (!rawToken) return null;
@@ -893,6 +897,8 @@ function getState(distance) {
 }
 
 function render() {
+  homeRenderCycle += 1;
+  const cycle = homeRenderCycle;
   if (centeredReadyTimer) {
     clearTimeout(centeredReadyTimer);
     centeredReadyTimer = null;
@@ -920,6 +926,7 @@ function render() {
       if (!wasHidden) {
         card.classList.add(prevState, "puff-out");
         setTimeout(() => {
+          if (cycle !== homeRenderCycle) return;
           if (currentStates[index] === "hidden") {
             card.classList.remove("active", "left", "right", "left-far", "right-far", "puff-out", "no-transform");
             card.classList.add("hidden");
@@ -936,6 +943,7 @@ function render() {
     if (wasHidden) {
       card.classList.add("puff-in", "no-transform");
       setTimeout(() => {
+        if (cycle !== homeRenderCycle) return;
         card.classList.remove("puff-in", "no-transform");
       }, 640);
     }
@@ -961,6 +969,23 @@ function updateHomeNavVisibility() {
     homeNext.classList.toggle("nav-disabled", disableRight);
     homeNext.setAttribute("aria-disabled", String(disableRight));
   }
+}
+
+function requestHomeShift(direction) {
+  if (!direction) return;
+  if (homeTransitioning) return;
+
+  const nextIndex = activeIndex + direction;
+  if (nextIndex < 0 || nextIndex >= cards.length) return;
+
+  homeTransitioning = true;
+  activeIndex = nextIndex;
+  render();
+
+  window.setTimeout(() => {
+    homeTransitioning = false;
+    updateHomeNavVisibility();
+  }, HOME_TRANSITION_MS);
 }
 
 function showOverlay(overlay) {
@@ -1199,15 +1224,11 @@ function animateCloseOverlayToHome(overlay) {
 }
 
 function goHomePrev() {
-  if (activeIndex <= 0) return;
-  activeIndex -= 1;
-  render();
+  requestHomeShift(-1);
 }
 
 function goHomeNext() {
-  if (activeIndex >= cards.length - 1) return;
-  activeIndex += 1;
-  render();
+  requestHomeShift(1);
 }
 
 cards.forEach((card, index) => {
@@ -1418,6 +1439,7 @@ spotifyAuthBtn?.addEventListener("click", () => {
     console.error(error);
   });
 });
+
 
 eventsLink?.addEventListener("click", (event) => {
   event.preventDefault();
