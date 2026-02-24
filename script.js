@@ -295,23 +295,39 @@ function updateProgressFill(value) {
 
 function parseEventDateToken(rawToken) {
   if (!rawToken) return null;
-  const token = rawToken.trim().toUpperCase();
-  const match = token.match(/^([A-Z]{3})\s+(\d{1,2}),\s*(\d{4})$/);
+  const token = rawToken
+    .trim()
+    .toUpperCase()
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ");
+  const match = token.match(/^([A-Z]{3,9})\s+(\d{1,2}),\s*(\d{4})$/);
   if (!match) return null;
 
   const monthMap = {
     JAN: 0,
+    JANUARY: 0,
     FEB: 1,
+    FEBRUARY: 1,
     MAR: 2,
+    MARCH: 2,
     APR: 3,
+    APRIL: 3,
     MAY: 4,
     JUN: 5,
+    JUNE: 5,
     JUL: 6,
+    JULY: 6,
     AUG: 7,
+    AUGUST: 7,
     SEP: 8,
+    SEPT: 8,
+    SEPTEMBER: 8,
     OCT: 9,
+    OCTOBER: 9,
     NOV: 10,
+    NOVEMBER: 10,
     DEC: 11,
+    DECEMBER: 11,
   };
 
   const month = monthMap[match[1]];
@@ -328,9 +344,18 @@ function getEventEndDate(row) {
   const raw = dateNode?.textContent?.trim();
   if (!raw) return null;
 
-  const parts = raw.split(/\s*-\s*/).map((piece) => piece.trim()).filter(Boolean);
-  const lastToken = parts[parts.length - 1] || "";
-  return parseEventDateToken(lastToken) || parseEventDateToken(parts[0] || "");
+  const normalized = raw.replace(/\u2013|\u2014/g, "-");
+  const dateRegex = /\b([A-Za-z]{3,9})\s+(\d{1,2}),\s*(\d{4})\b/g;
+  const extracted = [];
+  let match = dateRegex.exec(normalized);
+  while (match) {
+    extracted.push(`${match[1]} ${match[2]}, ${match[3]}`);
+    match = dateRegex.exec(normalized);
+  }
+
+  if (!extracted.length) return null;
+  const lastToken = extracted[extracted.length - 1];
+  return parseEventDateToken(lastToken) || parseEventDateToken(extracted[0]);
 }
 
 function refreshEventsByDate() {
@@ -344,6 +369,7 @@ function refreshEventsByDate() {
   rows.forEach((row) => {
     const endDate = getEventEndDate(row);
     if (!endDate) {
+      row.classList.remove("event-expired");
       row.hidden = false;
       visibleCount += 1;
       return;
@@ -351,6 +377,7 @@ function refreshEventsByDate() {
     const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
     const isPast = endOfDay < now;
     row.hidden = isPast;
+    row.classList.toggle("event-expired", isPast);
     if (!isPast) visibleCount += 1;
   });
 
@@ -1451,10 +1478,8 @@ closeEvents?.addEventListener("click", () => {
   hideOverlay(eventsOverlay);
 });
 
-eventsOverlay?.addEventListener("click", (event) => {
-  if (event.target === eventsOverlay) {
-    hideOverlay(eventsOverlay);
-  }
+eventsOverlay?.addEventListener("click", () => {
+  hideOverlay(eventsOverlay);
 });
 
 overlayButtons.forEach((button) => {

@@ -754,15 +754,22 @@ body.carousel-ready .album-card.no-transform {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.72);
   display: grid;
   place-items: start stretch;
   overflow-y: auto;
   font-family: "Inter", sans-serif;
   opacity: 0;
   backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   transition: opacity 0.34s ease, backdrop-filter 0.34s ease, background 0.34s ease;
   overflow: hidden;
+}
+
+.events-overlay.overlay-visible {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 body.theme-dark .stage {
@@ -783,7 +790,13 @@ body.theme-dark .detail-overlay {
 }
 
 body.theme-dark .events-overlay {
-  background: rgba(13, 17, 24, 0.94);
+  background: rgba(13, 17, 24, 0.76);
+}
+
+body.theme-dark .events-overlay.overlay-visible {
+  background: rgba(13, 17, 24, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 body.theme-dark .events-panel,
@@ -880,6 +893,10 @@ body.theme-dark .detail-tracks li {
   min-height: 0;
   padding: clamp(0.48rem, 0.95vh, 0.72rem) clamp(0.6rem, 2vw, 1.45rem);
   border-bottom: 1px solid #8e98a1;
+}
+
+.event-row.event-expired {
+  display: none !important;
 }
 
 .event-primary {
