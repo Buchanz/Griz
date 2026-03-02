@@ -17,14 +17,54 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <header class="glass-header">
+  <body class="splash-active">
+    <section class="splash-intro" id="splashIntro" aria-hidden="true">
+      <div class="splash-frame">
+        <img class="splash-photo" src="assets/griz-image.jpeg" alt="GRiZ intro image" />
+      </div>
+      <div class="splash-word" aria-label="GRiZ">
+        <span class="splash-letter-frame"><span class="splash-letter-track"><span>G</span><span>G</span></span></span>
+        <span class="splash-letter-frame"><span class="splash-letter-track"><span>R</span><span>R</span></span></span>
+        <span class="splash-letter-frame"><span class="splash-letter-track"><span>i</span><span>i</span></span></span>
+        <span class="splash-letter-frame"><span class="splash-letter-track"><span>Z</span><span>Z</span></span></span>
+      </div>
+    </section>
+
+    <header class="mobile-header">
       <img class="corner-logo top-left-logo" src="assets/Griz Logo.jpg" alt="GRiZ logo" />
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle menu" aria-expanded="false">
+        <span class="menu-line top"></span>
+        <span class="menu-line bottom"></span>
+      </button>
     </header>
-    <nav class="top-nav bottom-nav" aria-label="Main navigation">
-      <a href="#" id="aboutLink">About</a>
-      <a href="#" id="eventsLink">Events</a>
-      <a href="https://griz.lnk.to/listen" id="shopLink" target="_blank" rel="noopener noreferrer">Listen</a>
+    <nav class="mobile-menu closed" id="siteMenu" aria-label="Main navigation" aria-hidden="true">
+      <button class="mobile-menu-item primary closed" type="button" data-nav="about">About</button>
+      <a
+        class="mobile-menu-item primary closed"
+        href="https://griz.lnk.to/listen"
+        data-nav="listen"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Listen</a>
+      <button class="mobile-menu-item primary closed" type="button" data-nav="events">Events</button>
+      <a
+        class="mobile-menu-item secondary closed"
+        href="https://www.instagram.com/griz/?hl=en"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Instagram</a>
+      <a
+        class="mobile-menu-item secondary closed"
+        href="https://www.youtube.com/channel/UCkEsnx-qZuVMwRJrH-GXmVg"
+        target="_blank"
+        rel="noopener noreferrer"
+      >YouTube</a>
+      <a
+        class="mobile-menu-item secondary closed"
+        href="https://x.com/Griz?lang=en"
+        target="_blank"
+        rel="noopener noreferrer"
+      >X</a>
     </nav>
 
     <main class="stage">

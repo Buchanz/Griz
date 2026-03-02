@@ -1,6 +1,4 @@
 const cards = Array.from(document.querySelectorAll(".album-card"));
-const aboutLink = document.getElementById("aboutLink");
-const eventsLink = document.getElementById("eventsLink");
 const eventsOverlay = document.getElementById("eventsOverlay");
 const closeEvents = document.getElementById("closeEvents");
 const overlayButtons = Array.from(document.querySelectorAll(".album-pill[data-open-overlay]"));
@@ -24,6 +22,10 @@ const playerSubtitle = document.getElementById("playerSubtitle");
 const playerProgress = document.getElementById("playerProgress");
 const playerCurrent = document.getElementById("playerCurrent");
 const playerDuration = document.getElementById("playerDuration");
+const menuToggle = document.getElementById("menuToggle");
+const siteMenu = document.getElementById("siteMenu");
+const splashIntro = document.getElementById("splashIntro");
+const mobileMenuItems = Array.from(document.querySelectorAll(".mobile-menu-item"));
 const detailOverlayOrder = [
   "sidequestOverlay",
   "ouroOverlay",
@@ -73,6 +75,7 @@ let eventsRefreshTimer = null;
 let homeTransitioning = false;
 const HOME_TRANSITION_MS = 620;
 let homeRenderCycle = 0;
+let detailNavDesktopLock = null;
 
 const SPOTIFY_CONFIG = {
   clientId: "6789ef7450fb41dc939104ee025bd65c",
@@ -142,6 +145,9 @@ const sidequestTimeline = SIDEQUEST_MIX.tracks.reduce((acc, track, index) => {
   });
   return acc;
 }, []);
+
+// Optional lyrics keyed by overlay id + exact track title text.
+const LYRICS_BY_OVERLAY = {};
 
 function extractDominantRgb(img) {
   const canvas = document.createElement("canvas");
@@ -980,7 +986,7 @@ function render() {
   if (centeredCard) {
     centeredReadyTimer = setTimeout(() => {
       centeredCard.classList.add("centered-ready");
-    }, 430);
+    }, 620);
   }
   updateHomeNavVisibility();
 }
@@ -1030,11 +1036,14 @@ function showOverlay(overlay) {
         setTimeout(() => {
           if (overlay.classList.contains("overlay-visible")) {
             overlay.classList.add("nav-visible");
+            syncHeaderForAlbumOverlay();
           }
         }, 220);
       }
     });
   });
+  syncHeaderForAlbumOverlay();
+  syncEventsHeaderState();
 }
 
 function hideOverlay(overlay) {
@@ -1049,8 +1058,80 @@ function hideOverlay(overlay) {
     if (!overlay.classList.contains("overlay-visible")) {
       overlay.classList.add("hidden-overlay");
       overlay.classList.remove("entering");
+      syncHeaderForAlbumOverlay();
+      syncEventsHeaderState();
     }
   }, 320);
+  syncHeaderForAlbumOverlay();
+  syncEventsHeaderState();
+}
+
+function syncHeaderForAlbumOverlay() {
+  const anyOverlayOpen =
+    (eventsOverlay &&
+      eventsOverlay.classList.contains("overlay-visible") &&
+      !eventsOverlay.classList.contains("hidden-overlay")) ||
+    detailOverlays.some(
+      (overlay) =>
+        overlay &&
+        overlay.classList.contains("overlay-visible") &&
+        !overlay.classList.contains("hidden-overlay")
+    );
+  document.body.classList.toggle("album-overlay-open", Boolean(anyOverlayOpen));
+}
+
+function syncEventsHeaderState() {
+  const eventsOpen = Boolean(
+    eventsOverlay &&
+      eventsOverlay.classList.contains("overlay-visible") &&
+      !eventsOverlay.classList.contains("hidden-overlay")
+  );
+  document.body.classList.toggle("events-open", eventsOpen);
+}
+
+function closeVisibleDetailOverlays() {
+  detailOverlays.forEach((overlay) => {
+    if (!overlay) return;
+    overlay.classList.remove(
+      "overlay-visible",
+      "nav-visible",
+      "entering",
+      "cover-animating",
+      "switching-out-left",
+      "switching-out-right",
+      "switching-in-left",
+      "switching-in-right",
+      "switching-out-fade",
+      "switching-in-fade"
+    );
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.classList.add("hidden-overlay");
+    overlay.style.pointerEvents = "";
+  });
+  detailOverlaySwitching = false;
+  syncHeaderForAlbumOverlay();
+  syncEventsHeaderState();
+}
+
+function setMenuOpen(nextOpen) {
+  if (!siteMenu) return;
+  siteMenu.classList.toggle("open", nextOpen);
+  siteMenu.classList.toggle("closed", !nextOpen);
+  siteMenu.setAttribute("aria-hidden", String(!nextOpen));
+  document.body.classList.toggle("menu-open", nextOpen);
+
+  if (menuToggle) {
+    menuToggle.setAttribute("aria-expanded", String(nextOpen));
+  }
+
+  mobileMenuItems.forEach((item) => {
+    item.classList.toggle("open", nextOpen);
+    item.classList.toggle("closed", !nextOpen);
+  });
+}
+
+function closeMenu() {
+  setMenuOpen(false);
 }
 
 function updateDetailNavVisibility(overlay) {
@@ -1072,6 +1153,75 @@ function updateDetailNavVisibility(overlay) {
     rightBtn.classList.toggle("nav-disabled", disabled);
     rightBtn.setAttribute("aria-disabled", String(disabled));
   }
+
+  updateDetailNavPosition(overlay);
+}
+
+function updateDetailNavPosition(overlay) {
+  if (!overlay || !overlay.classList.contains("detail-overlay") || overlay.id === "aboutOverlay") return;
+  const leftBtn = overlay.querySelector(".detail-nav-left");
+  const rightBtn = overlay.querySelector(".detail-nav-right");
+  if (!leftBtn || !rightBtn) return;
+
+  const isMobile = window.matchMedia("(max-width: 780px)").matches;
+  if (isMobile) {
+    detailNavDesktopLock = null;
+    leftBtn.style.left = "";
+    leftBtn.style.top = "";
+    leftBtn.style.position = "";
+    rightBtn.style.left = "";
+    rightBtn.style.top = "";
+    rightBtn.style.position = "";
+    return;
+  }
+
+  const applyDesktopLock = (targetOverlay) => {
+    if (!targetOverlay || !targetOverlay.classList.contains("detail-overlay")) return;
+    const targetLeft = targetOverlay.querySelector(".detail-nav-left");
+    const targetRight = targetOverlay.querySelector(".detail-nav-right");
+    if (!targetLeft || !targetRight) return;
+
+    targetLeft.style.position = "fixed";
+    targetLeft.style.top = `${detailNavDesktopLock.centerY}px`;
+    targetLeft.style.left = `${detailNavDesktopLock.leftX}px`;
+
+    targetRight.style.position = "fixed";
+    targetRight.style.top = `${detailNavDesktopLock.centerY}px`;
+    targetRight.style.left = `${detailNavDesktopLock.rightX}px`;
+  };
+
+  if (detailNavDesktopLock) {
+    detailOverlays.forEach((item) => {
+      if (!item || item.id === "aboutOverlay") return;
+      applyDesktopLock(item);
+    });
+    return;
+  }
+
+  const referenceOverlay =
+    detailOverlays.find(
+      (item) =>
+        item &&
+        item.id !== "aboutOverlay" &&
+        item.classList.contains("overlay-visible") &&
+        !item.classList.contains("hidden-overlay")
+    ) || detailOverlayOrder[0] || overlay;
+
+  const referenceCover = referenceOverlay?.querySelector(".detail-cover");
+  if (!referenceCover) return;
+
+  const coverRect = referenceCover.getBoundingClientRect();
+  const centerY = Math.round(coverRect.top + coverRect.height / 2);
+  const sideGap = 12;
+  const leftWidth = leftBtn.offsetWidth || 28;
+  const leftX = Math.round(coverRect.left - leftWidth - sideGap);
+  const rightX = Math.round(coverRect.right + sideGap);
+  detailNavDesktopLock = { centerY, leftX, rightX };
+
+  detailOverlays.forEach((item) => {
+    if (!item || item.id === "aboutOverlay") return;
+    applyDesktopLock(item);
+  });
 }
 
 function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
@@ -1090,8 +1240,8 @@ function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
     render();
   }
 
-  const outClass = "switching-out-fade";
-  const inClass = "switching-in-fade";
+  const outClass = direction > 0 ? "switching-out-left" : "switching-out-right";
+  const inClass = direction > 0 ? "switching-in-right" : "switching-in-left";
   const switchClasses = [
     "switching-out-left",
     "switching-out-right",
@@ -1113,10 +1263,7 @@ function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
   nextOverlay.setAttribute("aria-hidden", "false");
   nextOverlay.style.pointerEvents = "auto";
   updateDetailNavVisibility(nextOverlay);
-
-  requestAnimationFrame(() => {
-    nextOverlay.classList.remove(inClass);
-  });
+  requestAnimationFrame(() => updateDetailNavPosition(nextOverlay));
 
   setTimeout(() => {
     currentOverlay.classList.remove("overlay-visible");
@@ -1126,7 +1273,9 @@ function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
     currentOverlay.style.pointerEvents = "";
     nextOverlay.style.pointerEvents = "";
     detailOverlaySwitching = false;
-  }, 560);
+    syncHeaderForAlbumOverlay();
+  }, 940);
+  syncHeaderForAlbumOverlay();
 }
 
 function navigateDetailOverlay(currentOverlay, direction) {
@@ -1144,6 +1293,206 @@ function getOverlayFromCard(card) {
   return document.getElementById(overlayId);
 }
 
+function getTrackTitleFromRow(row) {
+  const firstCol = row?.querySelector("span:first-child");
+  if (!firstCol) return "";
+  const raw = Array.from(firstCol.childNodes)
+    .filter((node) => node.nodeType === Node.TEXT_NODE)
+    .map((node) => node.textContent || "")
+    .join(" ")
+    .trim();
+  return raw.replace(/\s+/g, " ");
+}
+
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"]/g, (match) => {
+    if (match === "&") return "&amp;";
+    if (match === "<") return "&lt;";
+    if (match === ">") return "&gt;";
+    return "&quot;";
+  });
+}
+
+function formatLyrics(lyricsValue) {
+  if (!lyricsValue || !lyricsValue.trim()) return [];
+  return lyricsValue
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function applyDetailTitle(detailTitle, nextText, options = {}) {
+  if (!detailTitle) return;
+  const { animate = true } = options;
+  let textNode = detailTitle.querySelector(".detail-title-text");
+  if (!textNode) {
+    textNode = document.createElement("span");
+    textNode.className = "detail-title-text";
+    detailTitle.textContent = "";
+    detailTitle.appendChild(textNode);
+  }
+
+  const value = String(nextText || "").trim();
+
+  const commitTitle = () => {
+    textNode.textContent = value;
+    textNode.setAttribute("data-title", value);
+
+    detailTitle.classList.remove("marquee");
+    detailTitle.style.removeProperty("--title-shift");
+    detailTitle.style.removeProperty("--title-marquee-duration");
+
+    requestAnimationFrame(() => {
+      const overflow = Math.ceil(textNode.scrollWidth - detailTitle.clientWidth);
+      if (overflow <= 8) return;
+      const gapPx = 40;
+      // Move one full text cycle so the duplicated copy lines up seamlessly.
+      const shiftPx = textNode.scrollWidth + gapPx;
+      const durationSec = Math.max(6, Math.min(18, shiftPx / 24));
+      detailTitle.style.setProperty("--title-shift", `${shiftPx}px`);
+      detailTitle.style.setProperty("--title-marquee-duration", `${durationSec}s`);
+      detailTitle.classList.add("marquee");
+    });
+  };
+
+  if (!animate) {
+    commitTitle();
+    return;
+  }
+
+  if (detailTitle._titleSwapOutTimer) clearTimeout(detailTitle._titleSwapOutTimer);
+  if (detailTitle._titleSwapInTimer) clearTimeout(detailTitle._titleSwapInTimer);
+
+  textNode.classList.remove("title-puff-in", "title-puff-out");
+  void textNode.offsetWidth;
+  textNode.classList.add("title-puff-out");
+
+  detailTitle._titleSwapOutTimer = setTimeout(() => {
+    commitTitle();
+    textNode.classList.remove("title-puff-out");
+    void textNode.offsetWidth;
+    textNode.classList.add("title-puff-in");
+    detailTitle._titleSwapInTimer = setTimeout(() => {
+      textNode.classList.remove("title-puff-in");
+    }, 260);
+  }, 140);
+}
+
+function setupDetailLyricsInteractions() {
+  detailOverlays.forEach((overlay) => {
+    if (!overlay || overlay.id === "aboutOverlay") return;
+    const tracks = overlay.querySelector(".detail-tracks");
+    const coverWrap = overlay.querySelector(".detail-cover-wrap");
+    const detailTitle = overlay.querySelector(".detail-title");
+    if (!tracks || !coverWrap) return;
+    const originalAlbumTitle = (detailTitle?.textContent || "").trim();
+    applyDetailTitle(detailTitle, originalAlbumTitle, { animate: false });
+
+    const lyricsPanel = document.createElement("section");
+    lyricsPanel.className = "detail-lyrics-panel";
+    lyricsPanel.setAttribute("aria-live", "polite");
+    lyricsPanel.innerHTML = `
+      <header class="detail-lyrics-header">
+        <h3 class="detail-lyrics-title"></h3>
+        <button type="button" class="detail-lyrics-back">Back to Songs</button>
+      </header>
+      <div class="detail-lyrics-body"></div>
+    `;
+    tracks.insertAdjacentElement("afterend", lyricsPanel);
+
+    const lyricsTitle = lyricsPanel.querySelector(".detail-lyrics-title");
+    const lyricsBody = lyricsPanel.querySelector(".detail-lyrics-body");
+    const lyricsBackBtn = lyricsPanel.querySelector(".detail-lyrics-back");
+    const rows = Array.from(tracks.querySelectorAll("li"));
+
+    const closeLyricsPanel = () => {
+      rows.forEach((row) => row.classList.remove("is-selected"));
+      lyricsPanel.classList.remove("is-visible");
+      tracks.classList.remove("is-hidden");
+      applyDetailTitle(detailTitle, originalAlbumTitle);
+    };
+
+    lyricsBackBtn?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      closeLyricsPanel();
+    });
+
+    rows.forEach((row) => {
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("role", "button");
+
+      const activateRow = (event) => {
+        if (window.matchMedia("(max-width: 780px)").matches) return;
+        event.preventDefault();
+        event.stopPropagation();
+
+        const trackName = getTrackTitleFromRow(row) || "Unknown Track";
+        applyDetailTitle(detailTitle, trackName);
+
+        rows.forEach((item) => item.classList.remove("is-selected"));
+        row.classList.add("is-selected");
+
+        const inlineLyrics = row.dataset.lyrics || "";
+        const mappedLyrics = LYRICS_BY_OVERLAY[overlay.id]?.[trackName] || "";
+        const parsedLines = formatLyrics(inlineLyrics || mappedLyrics);
+
+        if (lyricsTitle) lyricsTitle.textContent = trackName;
+        if (lyricsBody) {
+          if (parsedLines.length) {
+            lyricsBody.innerHTML = parsedLines
+              .map((line) => `<p class="detail-lyrics-line">${escapeHtml(line)}</p>`)
+              .join("");
+          } else {
+            lyricsBody.innerHTML =
+              '<p class="detail-lyrics-empty">Lyrics unavailable for this track right now.</p>';
+          }
+        }
+
+        tracks.classList.add("is-hidden");
+        lyricsPanel.classList.add("is-visible");
+      };
+
+      row.addEventListener("click", activateRow);
+      row.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          activateRow(event);
+        }
+      });
+    });
+
+    overlay.addEventListener("transitionend", () => {
+      if (overlay.classList.contains("overlay-visible")) return;
+      closeLyricsPanel();
+    });
+  });
+}
+
+function runSplashIntro() {
+  if (!splashIntro) return;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion) {
+    document.body.classList.remove("splash-active");
+    splashIntro.remove();
+    return;
+  }
+
+  window.setTimeout(() => {
+    splashIntro.classList.add("splash-out");
+    document.body.classList.add("splash-hold");
+    document.body.classList.remove("splash-active");
+    window.setTimeout(() => {
+      document.body.classList.add("splash-home-in");
+      document.body.classList.remove("splash-hold");
+    }, 520);
+  }, 4800);
+
+  window.setTimeout(() => {
+    splashIntro.remove();
+    document.body.classList.remove("splash-home-in");
+  }, 6000);
+}
+
 function animateOpenOverlayFromCard(card, overlay) {
   const coverImage = card?.querySelector("img");
   const targetCover = overlay?.querySelector(".detail-cover");
@@ -1158,6 +1507,8 @@ function animateOpenOverlayFromCard(card, overlay) {
   overlay.classList.add("overlay-visible", "cover-animating");
   overlay.setAttribute("aria-hidden", "false");
   updateDetailNavVisibility(overlay);
+  requestAnimationFrame(() => updateDetailNavPosition(overlay));
+  syncHeaderForAlbumOverlay();
 
   const endRect = targetCover.getBoundingClientRect();
   const clone = coverImage.cloneNode(true);
@@ -1182,6 +1533,7 @@ function animateOpenOverlayFromCard(card, overlay) {
     if (overlay.classList.contains("overlay-visible")) {
       overlay.classList.add("nav-visible");
     }
+    syncHeaderForAlbumOverlay();
     clone.remove();
   }, 560);
 }
@@ -1230,6 +1582,7 @@ function animateCloseOverlayToHome(overlay) {
   overlay.classList.add("cover-animating");
   overlay.classList.remove("overlay-visible");
   overlay.setAttribute("aria-hidden", "true");
+  syncHeaderForAlbumOverlay();
 
   const endRect = targetImage.getBoundingClientRect();
   requestAnimationFrame(() => {
@@ -1247,6 +1600,7 @@ function animateCloseOverlayToHome(overlay) {
     overlay.classList.remove("cover-animating", "entering", "switching-in", "switching-out");
     targetCard.classList.remove("cover-reentry-hidden");
     scheduleHomeVinylReveal();
+    syncHeaderForAlbumOverlay();
   }, 560);
 }
 
@@ -1278,7 +1632,7 @@ cards.forEach((card, index) => {
   });
 });
 
-// Home carousel swipe is mobile-only.
+// Home carousel swipe/drag input (mobile touch + desktop drag/trackpad).
 if (albumTrack) {
   let startX = 0;
   let startY = 0;
@@ -1286,6 +1640,12 @@ if (albumTrack) {
   let ignoreSwipe = false;
   let startedOnActiveCover = false;
   let startedCardIndex = -1;
+  let isPointerDown = false;
+  let pointerHasNavigated = false;
+  let wheelAccumulator = 0;
+  let wheelResetTimer = null;
+  let wheelGestureActive = false;
+  let wheelGestureTimer = null;
   const dragIgnoreSelector = ".album-pill, .home-nav";
 
   const isMobileViewport = () => window.matchMedia("(max-width: 780px)").matches;
@@ -1377,11 +1737,134 @@ if (albumTrack) {
     if (!touch) return;
     onEnd(touch.clientX, touch.clientY);
   });
+
+  albumTrack.addEventListener("mousedown", (event) => {
+    if (isMobileViewport()) return;
+    if (event.button !== 0) return;
+    ignoreSwipe = Boolean(event.target.closest(dragIgnoreSelector));
+    isPointerDown = true;
+    pointerHasNavigated = false;
+    startX = event.clientX;
+    startY = event.clientY;
+  });
+
+  albumTrack.addEventListener("mousemove", (event) => {
+    if (isMobileViewport() || !isPointerDown || ignoreSwipe || pointerHasNavigated) return;
+    const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
+    const horizontalSwipe = Math.abs(deltaX) > 68 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+    if (!horizontalSwipe) return;
+    pointerHasNavigated = true;
+    if (deltaX < 0) {
+      goHomeNext();
+      return;
+    }
+    goHomePrev();
+  });
+
+  albumTrack.addEventListener("mouseup", () => {
+    isPointerDown = false;
+    pointerHasNavigated = false;
+    ignoreSwipe = false;
+  });
+
+  albumTrack.addEventListener("mouseleave", () => {
+    isPointerDown = false;
+    pointerHasNavigated = false;
+    ignoreSwipe = false;
+  });
+
+  albumTrack.addEventListener(
+    "wheel",
+    (event) => {
+      if (isMobileViewport()) return;
+      if (event.target.closest(dragIgnoreSelector)) return;
+
+      const absX = Math.abs(event.deltaX);
+      const absY = Math.abs(event.deltaY);
+      const primaryHorizontal = absX > absY * 1.05;
+      const inferredHorizontal = event.shiftKey && absY > 0;
+      if (!primaryHorizontal && !inferredHorizontal) return;
+
+      // One trackpad/wheel gesture should only move one album.
+      // Keep this active until momentum settles.
+      if (wheelGestureTimer) clearTimeout(wheelGestureTimer);
+      wheelGestureTimer = setTimeout(() => {
+        wheelGestureActive = false;
+        wheelAccumulator = 0;
+      }, 260);
+      if (wheelGestureActive) {
+        event.preventDefault();
+        return;
+      }
+
+      const delta = primaryHorizontal ? event.deltaX : event.deltaY;
+      wheelAccumulator += delta;
+      if (wheelResetTimer) clearTimeout(wheelResetTimer);
+      wheelResetTimer = setTimeout(() => {
+        wheelAccumulator = 0;
+      }, 140);
+
+      const threshold = 42;
+      if (Math.abs(wheelAccumulator) < threshold) return;
+
+      event.preventDefault();
+      if (wheelAccumulator > 0) {
+        goHomeNext();
+      } else {
+        goHomePrev();
+      }
+      wheelAccumulator = 0;
+      wheelGestureActive = true;
+    },
+    { passive: false }
+  );
 }
 
-aboutLink?.addEventListener("click", (event) => {
-  event.preventDefault();
-  showOverlay(aboutOverlay);
+menuToggle?.addEventListener("click", () => {
+  const isOpen = siteMenu?.classList.contains("open");
+  setMenuOpen(!isOpen);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMenu();
+});
+
+siteMenu?.addEventListener("click", (event) => {
+  const actionable = event.target.closest("[data-nav]");
+  if (!actionable) {
+    closeMenu();
+    return;
+  }
+
+  const navType = actionable.getAttribute("data-nav");
+  if (navType === "about") {
+    event.preventDefault();
+    closeMenu();
+    closeVisibleDetailOverlays();
+    showOverlay(aboutOverlay);
+    return;
+  }
+
+  if (navType === "events") {
+    event.preventDefault();
+    closeMenu();
+    closeVisibleDetailOverlays();
+    refreshEventsByDate();
+    showOverlay(eventsOverlay);
+    return;
+  }
+
+  closeMenu();
+});
+
+document.addEventListener("click", (event) => {
+  if (!siteMenu?.classList.contains("open")) return;
+  const clickedInMenu = Boolean(event.target.closest("#siteMenu"));
+  const clickedToggle = Boolean(event.target.closest("#menuToggle"));
+  if (!clickedInMenu && !clickedToggle) {
+    closeMenu();
+  }
 });
 
 homePrev?.addEventListener("click", (event) => {
@@ -1468,12 +1951,6 @@ spotifyAuthBtn?.addEventListener("click", () => {
 });
 
 
-eventsLink?.addEventListener("click", (event) => {
-  event.preventDefault();
-  refreshEventsByDate();
-  showOverlay(eventsOverlay);
-});
-
 closeEvents?.addEventListener("click", () => {
   hideOverlay(eventsOverlay);
 });
@@ -1520,6 +1997,11 @@ detailNavButtons.forEach((button) => {
     if (!currentOverlay) return;
     navigateDetailOverlay(currentOverlay, direction);
   });
+});
+
+window.addEventListener("resize", () => {
+  detailNavDesktopLock = null;
+  detailOverlays.forEach((overlay) => updateDetailNavPosition(overlay));
 });
 
 detailOverlays.forEach((overlay) => {
@@ -1606,12 +2088,14 @@ detailOverlays.forEach((overlay) => {
   const detailPage = overlay.querySelector(".detail-page");
   detailPage?.addEventListener("click", (event) => {
     const clickedInteractive = event.target.closest(
-      ".detail-cover-wrap, .detail-tracks, .detail-close, .detail-nav"
+      ".detail-cover-wrap, .detail-tracks, .detail-lyrics-panel, .detail-close, .detail-nav"
     );
     if (clickedInteractive) return;
     animateCloseOverlayToHome(overlay);
   });
 });
+
+setupDetailLyricsInteractions();
 
 async function initSpotify() {
   setDefaultPlayerMeta();
@@ -1640,6 +2124,9 @@ async function initSpotify() {
 
 initSpotify().catch((error) => console.error(error));
 render();
+syncHeaderForAlbumOverlay();
+syncEventsHeaderState();
+runSplashIntro();
 startEventsAutoRefresh();
 requestAnimationFrame(() => {
   document.body.classList.add("carousel-ready");
