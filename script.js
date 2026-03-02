@@ -1382,41 +1382,16 @@ function setupDetailLyricsInteractions() {
   detailOverlays.forEach((overlay) => {
     if (!overlay || overlay.id === "aboutOverlay") return;
     const tracks = overlay.querySelector(".detail-tracks");
-    const coverWrap = overlay.querySelector(".detail-cover-wrap");
     const detailTitle = overlay.querySelector(".detail-title");
-    if (!tracks || !coverWrap) return;
+    if (!tracks) return;
     const originalAlbumTitle = (detailTitle?.textContent || "").trim();
     applyDetailTitle(detailTitle, originalAlbumTitle, { animate: false });
-
-    const lyricsPanel = document.createElement("section");
-    lyricsPanel.className = "detail-lyrics-panel";
-    lyricsPanel.setAttribute("aria-live", "polite");
-    lyricsPanel.innerHTML = `
-      <header class="detail-lyrics-header">
-        <h3 class="detail-lyrics-title"></h3>
-        <button type="button" class="detail-lyrics-back">Back to Songs</button>
-      </header>
-      <div class="detail-lyrics-body"></div>
-    `;
-    tracks.insertAdjacentElement("afterend", lyricsPanel);
-
-    const lyricsTitle = lyricsPanel.querySelector(".detail-lyrics-title");
-    const lyricsBody = lyricsPanel.querySelector(".detail-lyrics-body");
-    const lyricsBackBtn = lyricsPanel.querySelector(".detail-lyrics-back");
     const rows = Array.from(tracks.querySelectorAll("li"));
 
-    const closeLyricsPanel = () => {
+    const resetTrackSelection = () => {
       rows.forEach((row) => row.classList.remove("is-selected"));
-      lyricsPanel.classList.remove("is-visible");
-      tracks.classList.remove("is-hidden");
       applyDetailTitle(detailTitle, originalAlbumTitle);
     };
-
-    lyricsBackBtn?.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      closeLyricsPanel();
-    });
 
     rows.forEach((row) => {
       row.setAttribute("tabindex", "0");
@@ -1432,25 +1407,6 @@ function setupDetailLyricsInteractions() {
 
         rows.forEach((item) => item.classList.remove("is-selected"));
         row.classList.add("is-selected");
-
-        const inlineLyrics = row.dataset.lyrics || "";
-        const mappedLyrics = LYRICS_BY_OVERLAY[overlay.id]?.[trackName] || "";
-        const parsedLines = formatLyrics(inlineLyrics || mappedLyrics);
-
-        if (lyricsTitle) lyricsTitle.textContent = trackName;
-        if (lyricsBody) {
-          if (parsedLines.length) {
-            lyricsBody.innerHTML = parsedLines
-              .map((line) => `<p class="detail-lyrics-line">${escapeHtml(line)}</p>`)
-              .join("");
-          } else {
-            lyricsBody.innerHTML =
-              '<p class="detail-lyrics-empty">Lyrics unavailable for this track right now.</p>';
-          }
-        }
-
-        tracks.classList.add("is-hidden");
-        lyricsPanel.classList.add("is-visible");
       };
 
       row.addEventListener("click", activateRow);
@@ -1463,7 +1419,7 @@ function setupDetailLyricsInteractions() {
 
     overlay.addEventListener("transitionend", () => {
       if (overlay.classList.contains("overlay-visible")) return;
-      closeLyricsPanel();
+      resetTrackSelection();
     });
   });
 }
@@ -1484,13 +1440,13 @@ function runSplashIntro() {
     window.setTimeout(() => {
       document.body.classList.add("splash-home-in");
       document.body.classList.remove("splash-hold");
-    }, 520);
+    }, 0);
   }, 4800);
 
   window.setTimeout(() => {
     splashIntro.remove();
     document.body.classList.remove("splash-home-in");
-  }, 6000);
+  }, 7000);
 }
 
 function animateOpenOverlayFromCard(card, overlay) {

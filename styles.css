@@ -42,12 +42,13 @@ body {
 }
 
 .splash-frame {
-  --splash-size: clamp(220px, 29vw, 330px);
-  width: var(--splash-size);
-  aspect-ratio: 1 / 1;
+  width: auto;
+  height: auto;
   border-radius: 0;
   overflow: hidden;
   position: relative;
+  z-index: 602;
+  display: inline-block;
   box-shadow:
     0 34px 86px rgba(12, 16, 24, 0.24),
     0 12px 24px rgba(14, 18, 28, 0.16);
@@ -57,17 +58,15 @@ body {
 }
 
 .splash-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.splash-photo {
+  position: relative;
+  inset: auto;
+  display: block;
+  width: clamp(365px, 48vw, 550px);
+  height: auto;
   object-fit: cover;
   object-position: center 16%;
   transform-origin: top center;
-  transform: translateY(0) scale(1.2);
+  transform: translateY(0) scale(1);
 }
 
 .splash-word {
@@ -78,7 +77,7 @@ body {
   z-index: 601;
   display: inline-flex;
   align-items: center;
-  gap: 0.015em;
+  gap: 0;
   font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: clamp(2rem, 5vw, 3.25rem);
@@ -94,7 +93,7 @@ body {
 
 .splash-letter-frame {
   display: inline-flex;
-  width: 0.7em;
+  width: 0.88em;
   height: 1.08em;
   overflow: hidden;
   position: relative;
@@ -103,7 +102,11 @@ body {
 }
 
 .splash-letter-frame:nth-child(3) {
-  width: 0.46em;
+  width: 0.58em;
+}
+
+.splash-letter-frame:not(:last-child) {
+  margin-right: -0.08em;
 }
 
 .splash-letter-track {
@@ -132,35 +135,23 @@ body.splash-active .splash-frame {
 body.splash-active .splash-photo {
   animation:
     splash-photo-intro 640ms cubic-bezier(0.22, 1, 0.36, 1) 0ms forwards,
-    splash-photo-slide-up 620ms cubic-bezier(0.12, 0.02, 0.78, 1) 900ms forwards;
+    splash-photo-slide-up 900ms cubic-bezier(0.55, 0.085, 0.68, 0.53) 1150ms forwards;
 }
 
 body.splash-active .splash-word {
-  animation: splash-word-linked 620ms cubic-bezier(0.22, 1, 0.36, 1) 1560ms forwards;
+  animation: splash-word-linked 1020ms cubic-bezier(0.55, 0.085, 0.68, 0.53) 1150ms forwards;
 }
 
 body.splash-active .splash-word .splash-letter-track {
-  animation: splash-letter-roll 760ms cubic-bezier(0.22, 1, 0.36, 1) 3140ms 1 both;
-}
-
-body.splash-active .splash-word .splash-letter-frame:nth-child(2) .splash-letter-track {
-  animation-delay: 3215ms;
-}
-
-body.splash-active .splash-word .splash-letter-frame:nth-child(3) .splash-letter-track {
-  animation-delay: 3290ms;
-}
-
-body.splash-active .splash-word .splash-letter-frame:nth-child(4) .splash-letter-track {
-  animation-delay: 3365ms;
+  animation: splash-letter-roll 1120ms cubic-bezier(0.22, 1, 0.36, 1) 3140ms 1 both;
 }
 
 .splash-intro.splash-out {
-  animation: splash-overlay-out 860ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: splash-overlay-out 1260ms linear forwards;
 }
 
 .splash-intro.splash-out .splash-word {
-  animation: splash-word-out 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: splash-word-out 1260ms cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
   filter: none !important;
 }
 
@@ -176,8 +167,8 @@ body.splash-hold .mobile-header,
 body.splash-hold .stage,
 body.splash-hold .menu-toggle {
   opacity: 0;
-  transform: translateY(24px) scale(0.985);
-  filter: blur(8px);
+  transform: translateY(56px) scale(1);
+  filter: none;
 }
 
 body.splash-home-in .mobile-header,
@@ -185,8 +176,8 @@ body.splash-home-in .stage,
 body.splash-home-in .menu-toggle {
   opacity: 1;
   transform: translateY(0) scale(1);
-  filter: blur(0);
-  transition: opacity 980ms ease, transform 980ms cubic-bezier(0.22, 1, 0.36, 1), filter 980ms ease;
+  filter: none;
+  transition: transform 1260ms cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 0ms linear;
 }
 
 @keyframes splash-frame-puff {
@@ -204,19 +195,19 @@ body.splash-home-in .menu-toggle {
 
 @keyframes splash-photo-slide-up {
   0% {
-    transform: translateY(0) scale(1.2);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
-  80% {
-    transform: translateY(-25%) scale(1.2);
+  68% {
+    transform: translateY(-20%) scale(1);
     opacity: 1;
   }
-  82% {
-    transform: translateY(-27%) scale(1.2);
+  69% {
+    transform: translateY(-21%) scale(1);
     opacity: 0;
   }
   100% {
-    transform: translateY(-33%) scale(1.2);
+    transform: translateY(-24%) scale(1);
     opacity: 0;
   }
 }
@@ -224,12 +215,12 @@ body.splash-home-in .menu-toggle {
 @keyframes splash-photo-intro {
   0% {
     opacity: 0;
-    transform: translateY(0) scale(1.08);
+    transform: translateY(0) scale(1);
     filter: blur(5px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1.2);
+    transform: translateY(0) scale(1);
     filter: blur(0);
   }
 }
@@ -247,19 +238,14 @@ body.splash-home-in .menu-toggle {
 
 @keyframes splash-word-linked {
   0% {
-    opacity: 0.15;
-    transform: translate(-50%, 34%) scale(0.96);
-    filter: blur(2px);
-  }
-  50% {
-    opacity: 0.96;
-    transform: translate(-50%, -24%) scale(1);
-    filter: blur(0.35px);
+    opacity: 0;
+    transform: translate(-50%, 58px) scale(0.96);
+    filter: none;
   }
   100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    filter: blur(0);
+    filter: none;
   }
 }
 
@@ -269,9 +255,19 @@ body.splash-home-in .menu-toggle {
     transform: translate(-50%, -50%) scale(1);
     filter: none;
   }
+  68% {
+    opacity: 1;
+    transform: translate(-50%, -162%) scale(1);
+    filter: none;
+  }
+  69% {
+    opacity: 0;
+    transform: translate(-50%, -163%) scale(1);
+    filter: none;
+  }
   100% {
     opacity: 0;
-    transform: translate(-50%, -124%) scale(1);
+    transform: translate(-50%, -176%) scale(1);
     filter: none;
   }
 }
@@ -287,6 +283,9 @@ body.splash-home-in .menu-toggle {
 
 @keyframes splash-overlay-out {
   0% {
+    opacity: 1;
+  }
+  70% {
     opacity: 1;
   }
   100% {
@@ -1113,7 +1112,7 @@ body.carousel-ready .album-card.no-transform {
 .events-overlay {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 230;
   background: rgba(255, 255, 255, 0.72);
   display: grid;
   place-items: start stretch;
@@ -1899,6 +1898,10 @@ body.theme-dark .detail-tracks li {
     pointer-events: auto !important;
   }
 
+  .detail-overlay .detail-close {
+    left: calc(50% - (min(390px, 82vw) / 2) + 2px);
+  }
+
   body.events-open .top-left-logo {
     opacity: 0;
     visibility: hidden;
@@ -1924,6 +1927,34 @@ body.theme-dark .detail-tracks li {
   .mobile-header {
     min-height: 56px;
     padding: 0.5rem 0.9rem;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open {
+    transition-delay: 300ms;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open:nth-child(2) {
+    transition-delay: 360ms;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open:nth-child(3) {
+    transition-delay: 420ms;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open:nth-child(4) {
+    transition-delay: 480ms;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open:nth-child(5) {
+    transition-delay: 540ms;
+  }
+
+  .mobile-menu.open .mobile-menu-item.open:nth-child(6) {
+    transition-delay: 600ms;
+  }
+
+  .mobile-menu.closed .mobile-menu-item.closed {
+    transition-delay: 0ms;
   }
 
   .top-left-logo {
@@ -2162,6 +2193,15 @@ body.theme-dark .detail-tracks li {
 }
 
 @media (min-width: 781px) {
+  .events-header {
+    justify-content: center;
+  }
+
+  .events-header h2 {
+    width: 100%;
+    text-align: center;
+  }
+
   .album-card.active .album-label {
     opacity: 0;
     transform: translateX(-50%) translateY(14px) scale(0.97);
@@ -2218,6 +2258,13 @@ body.theme-dark .detail-tracks li {
     transition: opacity 60ms linear, visibility 0ms linear 0ms;
   }
 
+  body.events-open .top-left-logo {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 60ms linear, visibility 0ms linear 0ms;
+  }
+
   .menu-toggle {
     position: fixed;
     top: 20px;
@@ -2263,6 +2310,17 @@ body.theme-dark .detail-tracks li {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .events-header .overlay-close {
+    top: 50% !important;
+    left: -8px;
+    z-index: 260;
+    transform: translateY(-50%);
+  }
+
+  .events-header .overlay-close:hover {
+    transform: translateY(-50%) scale(1.08);
   }
 
   .events-panel {
