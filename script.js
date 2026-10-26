@@ -29,6 +29,7 @@ const siteMenu = document.getElementById("siteMenu");
 const splashIntro = document.getElementById("splashIntro");
 const mobileMenuItems = Array.from(document.querySelectorAll(".mobile-menu-item"));
 const detailOverlayOrder = [
+  "futurefunkOverlay",
   "sidequestOverlay",
   "ouroOverlay",
   "cgh4Overlay",
@@ -44,16 +45,17 @@ const detailOverlayOrder = [
   .filter(Boolean);
 
 const overlayToHomeIndex = {
-  sidequestOverlay: 0,
-  ouroOverlay: 1,
-  cgh4Overlay: 2,
-  rainbowOverlay: 3,
-  cgh3Overlay: 4,
-  ridewavesOverlay: 5,
-  goodwillOverlay: 6,
-  sayitloudOverlay: 7,
-  rebeleraOverlay: 8,
-  madOverlay: 9,
+  futurefunkOverlay: 0,
+  sidequestOverlay: 1,
+  ouroOverlay: 2,
+  cgh4Overlay: 3,
+  rainbowOverlay: 4,
+  cgh3Overlay: 5,
+  ridewavesOverlay: 6,
+  goodwillOverlay: 7,
+  sayitloudOverlay: 8,
+  rebeleraOverlay: 9,
+  madOverlay: 10,
 };
 
 let activeIndex = 0;

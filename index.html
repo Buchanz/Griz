@@ -72,7 +72,20 @@
         <button class="home-nav home-nav-left" id="homePrev" aria-label="Previous album">&#10094;</button>
         <button class="home-nav home-nav-right" id="homeNext" aria-label="Next album">&#10095;</button>
         <div class="album-track" id="albumTrack">
-          <article class="album-card" data-index="0" style="--vinyl-art: url('assets/SideQuestVinyl.png')">
+          <article class="album-card" data-index="0">
+            <div class="vinyl" aria-hidden="true"></div>
+            <img src="assets/FutureFunkVolume1Cover.jpeg" alt="Future Funk Volume 1 album cover" />
+            <div class="album-label album-label-action">
+              <div class="album-tag-text">
+                <span class="album-title">Future Funk Volume 1</span>
+                <span class="album-artist">GRiZ</span>
+                <span class="album-meta">Electronic • 2026 • Lossless</span>
+              </div>
+              <button class="album-pill" data-open-overlay="futurefunkOverlay" aria-label="Open Future Funk Volume 1 page">Open</button>
+            </div>
+          </article>
+
+          <article class="album-card" data-index="1" style="--vinyl-art: url('assets/SideQuestVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/SideQuestCover.jpeg" alt="Side Quest album cover" />
             <div class="album-label album-label-action">
@@ -85,7 +98,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="1" data-album="ouroboros" style="--vinyl-art: url('assets/OuroborosVinyl.png')">
+          <article class="album-card" data-index="2" data-album="ouroboros" style="--vinyl-art: url('assets/OuroborosVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/OuroborosCover.jpg" alt="Ouroboros album cover" />
             <div class="album-label album-label-action">
@@ -98,7 +111,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="2" style="--vinyl-art: url('assets/ChasingGoldenHourPT4Vinyl.png')">
+          <article class="album-card" data-index="3" style="--vinyl-art: url('assets/ChasingGoldenHourPT4Vinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/ChasingGoldenHourPT4Cover.jpg" alt="Chasing The Golden Hour Pt. 4 cover" />
             <div class="album-label album-label-action">
@@ -111,7 +124,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="3" style="--vinyl-art: url('assets/RainbowBrainVinyl.png')">
+          <article class="album-card" data-index="4" style="--vinyl-art: url('assets/RainbowBrainVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/RainbowBrainCover.jpeg" alt="Rainbow Brain album cover" />
             <div class="album-label album-label-action">
@@ -124,7 +137,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="4" style="--vinyl-art: url('assets/ChasingTheGoldenHourPT3Vinyl.png')">
+          <article class="album-card" data-index="5" style="--vinyl-art: url('assets/ChasingTheGoldenHourPT3Vinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/ChasingTheGOldenHourPT3Cover.jpg" alt="Chasing The Golden Hour Pt. 3 cover" />
             <div class="album-label album-label-action">
@@ -137,7 +150,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="5" style="--vinyl-art: url('assets/OuroborosVinyl.png')">
+          <article class="album-card" data-index="6" style="--vinyl-art: url('assets/OuroborosVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/RideWavesCover.jpeg" alt="Ride Waves cover" />
             <div class="album-label album-label-action">
@@ -150,7 +163,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="6" style="--vinyl-art: url('assets/GoodWillPrevialVinyl.png')">
+          <article class="album-card" data-index="7" style="--vinyl-art: url('assets/GoodWillPrevialVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/GRiZ-Good-Will-Prevail.png" alt="Good Will Prevail album cover" />
             <div class="album-label album-label-action">
@@ -163,7 +176,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="7" style="--vinyl-art: url('assets/SayItLoadVinyl.png')">
+          <article class="album-card" data-index="8" style="--vinyl-art: url('assets/SayItLoadVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/GRiZ-Say-It-Loud.png" alt="Say It Loud album cover" />
             <div class="album-label album-label-action">
@@ -176,7 +189,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="8" style="--vinyl-art: url('assets/RebelEraVinyl.png')">
+          <article class="album-card" data-index="9" style="--vinyl-art: url('assets/RebelEraVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/Redel_Era_album_art.jpg" alt="Rebel Era album cover" />
             <div class="album-label album-label-action">
@@ -189,7 +202,7 @@
             </div>
           </article>
 
-          <article class="album-card" data-index="9" style="--vinyl-art: url('assets/MadLiberationVinyl.png')">
+          <article class="album-card" data-index="10" style="--vinyl-art: url('assets/MadLiberationVinyl.png')">
             <div class="vinyl" aria-hidden="true"></div>
             <img src="assets/MadLiberationCover.jpeg" alt="Mad Liberation album cover" />
             <div class="album-label album-label-action">
@@ -642,6 +655,36 @@
             <li><span>Mercy</span><span>4:06</span></li>
             <li><span>Barrel Of A Gun</span><span>5:39</span></li>
             <li><span>Find My Own Way</span><span>5:03</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-overlay hidden-overlay" id="futurefunkOverlay" aria-hidden="true">
+      <div class="detail-page">
+        <button class="detail-close" aria-label="Close Future Funk Volume 1 page">Back</button>
+        <button class="detail-nav detail-nav-left" data-nav-dir="-1" aria-label="Previous album page">&#10094;</button>
+        <button class="detail-nav detail-nav-right" data-nav-dir="1" aria-label="Next album page">&#10095;</button>
+
+        <div class="detail-layout">
+          <div class="detail-cover-wrap">
+            <img class="detail-cover" src="assets/FutureFunkVolume1Cover.jpeg" alt="Future Funk Volume 1 cover" />
+            <p class="detail-title">Future Funk Volume 1</p>
+            <p class="detail-subtitle">GRiZ</p>
+            <p class="detail-subtitle">Electronic • 2026 • Lossless</p>
+          </div>
+
+          <ol class="detail-tracks">
+            <li><span>Outlaw</span><span>2:46</span></li>
+            <li><span>Rump Shaker<span class="track-sub">Big Gigantic</span></span><span>3:17</span></li>
+            <li><span>Rainbow Machine<span class="track-sub">ProbCause</span></span><span>2:44</span></li>
+            <li><span>BBFL</span><span>3:14</span></li>
+            <li><span>Funk You Up!</span><span>2:31</span></li>
+            <li><span>Found Your Love</span><span>2:32</span></li>
+            <li><span>When I&#8217;m Hot<span class="track-sub">Effin and ProbCause</span></span><span>2:48</span></li>
+            <li><span>iLLest In The Game<span class="track-sub">ProbCause</span></span><span>2:23</span></li>
+            <li><span>555</span><span>3:49</span></li>
+            <li><span>Back To Me</span><span>4:00</span></li>
           </ol>
         </div>
       </div>
