@@ -403,6 +403,10 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+eventsList?.addEventListener("click", (event) => {
+  if (event.target.closest(".event-ticket[href]")) event.stopPropagation();
+});
+
 function renderLiveEvents(payload) {
   if (!eventsList) return false;
   const includedEvents = Array.isArray(payload?.included) ? payload.included : [];
@@ -426,11 +430,17 @@ function renderLiveEvents(payload) {
       const dateLabel = startDate === endDate ? startLabel : `${startLabel} - ${endLabel}`;
       const venue = attributes["venue-name"] || "Venue TBA";
       const location = attributes["formatted-address"] || "Location TBA";
+      const isSoldOut = Boolean(attributes["is-sold-out"]);
+      const ticketUrl = `https://link.seated.com/${event.id}`;
+      const ticketMarkup = isSoldOut
+        ? `<span class="event-ticket is-sold-out" aria-label="Sold Out">Sold Out</span>`
+        : `<a class="event-ticket" href="${ticketUrl}" target="_blank" rel="noreferrer" aria-label="Tickets for ${escapeHtml(venue)}">Tickets</a>`;
 
       return `<article class="event-row" data-end-date="${escapeHtml(endDate)}">
         <div class="event-primary">${escapeHtml(dateLabel)}</div>
         <div class="event-secondary">${escapeHtml(venue)}</div>
         <div class="event-secondary">${escapeHtml(location)}</div>
+        ${ticketMarkup}
       </article>`;
     })
     .join("");
