@@ -10,6 +10,8 @@ const homeNext = document.getElementById("homeNext");
 const albumTrack = document.getElementById("albumTrack");
 const aboutOverlay = document.getElementById("aboutOverlay");
 const eventsList = eventsOverlay?.querySelector(".events-list") || null;
+const LIVE_EVENTS_URL =
+  "https://cdn.seated.com/api/tour/72e04a62-14cc-49e6-b9c9-45ccf4bccdd3?include=tour-events";
 const playPauseBtn = document.getElementById("playPauseBtn");
 const prevTrackBtn = document.getElementById("prevTrackBtn");
 const nextTrackBtn = document.getElementById("nextTrackBtn");
@@ -346,6 +348,12 @@ function parseEventDateToken(rawToken) {
 }
 
 function getEventEndDate(row) {
+  const dataEndDate = row?.dataset?.endDate;
+  if (dataEndDate) {
+    const parsedDataDate = parseIsoLocalDate(dataEndDate);
+    if (parsedDataDate) return parsedDataDate;
+  }
+
   const dateNode = row?.querySelector(".event-primary");
   const raw = dateNode?.textContent?.trim();
   if (!raw) return null;
@@ -362,6 +370,90 @@ function getEventEndDate(row) {
   if (!extracted.length) return null;
   const lastToken = extracted[extracted.length - 1];
   return parseEventDateToken(lastToken) || parseEventDateToken(extracted[0]);
+}
+
+function parseIsoLocalDate(rawDate) {
+  const match = String(rawDate || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]) - 1;
+  const day = Number(match[3]);
+  const parsed = new Date(year, month, day);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatLiveEventDate(rawDate) {
+  const date = parseIsoLocalDate(rawDate);
+  if (!date) return "Date TBA";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+    .format(date)
+    .toUpperCase();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderLiveEvents(payload) {
+  if (!eventsList) return false;
+  const includedEvents = Array.isArray(payload?.included) ? payload.included : [];
+  const events = includedEvents
+    .filter((event) => event?.type === "tour-events" && event.attributes)
+    .sort((left, right) => {
+      const leftDate = parseIsoLocalDate(left.attributes["starts-at-date-local"]);
+      const rightDate = parseIsoLocalDate(right.attributes["starts-at-date-local"]);
+      return (leftDate?.getTime() || 0) - (rightDate?.getTime() || 0);
+    });
+
+  if (!events.length) return false;
+
+  eventsList.innerHTML = events
+    .map((event) => {
+      const attributes = event.attributes;
+      const startDate = attributes["starts-at-date-local"];
+      const endDate = attributes["ends-at-date-local"] || startDate;
+      const startLabel = formatLiveEventDate(startDate);
+      const endLabel = formatLiveEventDate(endDate);
+      const dateLabel = startDate === endDate ? startLabel : `${startLabel} - ${endLabel}`;
+      const venue = attributes["venue-name"] || "Venue TBA";
+      const location = attributes["formatted-address"] || "Location TBA";
+
+      return `<article class="event-row" data-end-date="${escapeHtml(endDate)}">
+        <div class="event-primary">${escapeHtml(dateLabel)}</div>
+        <div class="event-secondary">${escapeHtml(venue)}</div>
+        <div class="event-secondary">${escapeHtml(location)}</div>
+      </article>`;
+    })
+    .join("");
+
+  refreshEventsByDate();
+  return true;
+}
+
+async function loadLiveEvents() {
+  if (!eventsList) return;
+  try {
+    const response = await fetch(LIVE_EVENTS_URL, {
+      headers: { "X-Client-Version": "HEAD" },
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(`Events request failed: ${response.status}`);
+    renderLiveEvents(await response.json());
+    scheduleEventsDateRefresh();
+  } catch (error) {
+    // Keep the bundled rows visible if the external feed is unavailable.
+    refreshEventsByDate();
+    scheduleEventsDateRefresh();
+  }
 }
 
 function refreshEventsByDate() {
@@ -390,10 +482,29 @@ function refreshEventsByDate() {
   eventsList.style.gridTemplateRows = `repeat(${Math.max(visibleCount, 1)}, minmax(0, 1fr))`;
 }
 
+function scheduleEventsDateRefresh() {
+  if (!eventsList) return;
+  if (eventsRefreshTimer) window.clearTimeout(eventsRefreshTimer);
+
+  const now = new Date();
+  const nextExpiry = Array.from(eventsList.querySelectorAll(".event-row"))
+    .map((row) => getEventEndDate(row))
+    .filter(Boolean)
+    .map((date) => new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999))
+    .filter((date) => date > now)
+    .sort((left, right) => left - right)[0];
+
+  if (!nextExpiry) return;
+  eventsRefreshTimer = window.setTimeout(() => {
+    refreshEventsByDate();
+    loadLiveEvents();
+  }, Math.max(nextExpiry.getTime() - now.getTime() + 1000, 1000));
+}
+
 function startEventsAutoRefresh() {
   refreshEventsByDate();
-  if (eventsRefreshTimer) window.clearInterval(eventsRefreshTimer);
-  eventsRefreshTimer = window.setInterval(refreshEventsByDate, 60 * 1000);
+  loadLiveEvents();
+  scheduleEventsDateRefresh();
 }
 
 function setDefaultPlayerMeta() {
