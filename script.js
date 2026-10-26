@@ -443,7 +443,6 @@ async function loadLiveEvents() {
   if (!eventsList) return;
   try {
     const response = await fetch(LIVE_EVENTS_URL, {
-      headers: { "X-Client-Version": "HEAD" },
       cache: "no-store",
     });
     if (!response.ok) throw new Error(`Events request failed: ${response.status}`);
