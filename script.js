@@ -9,6 +9,8 @@ const homePrev = document.getElementById("homePrev");
 const homeNext = document.getElementById("homeNext");
 const albumTrack = document.getElementById("albumTrack");
 const aboutOverlay = document.getElementById("aboutOverlay");
+const homeBandcampPlayer = document.getElementById("homeBandcampPlayer");
+const homeBandcampPlayerShell = homeBandcampPlayer?.parentElement || null;
 const eventsList = eventsOverlay?.querySelector(".events-list") || null;
 const LIVE_EVENTS_URL =
   "https://cdn.seated.com/api/tour/72e04a62-14cc-49e6-b9c9-45ccf4bccdd3?include=tour-events";
@@ -1105,6 +1107,7 @@ function render() {
     currentStates[index] = nextState;
   });
   const centeredCard = cards[activeIndex];
+  syncBandcampPlayerToCenteredAlbum();
   if (centeredCard) {
     centeredReadyTimer = setTimeout(() => {
       centeredCard.classList.add("centered-ready");
@@ -1145,12 +1148,16 @@ function requestHomeShift(direction) {
 
 function showOverlay(overlay) {
   if (!overlay) return;
+  const playerStartRect = homeBandcampPlayer?.getBoundingClientRect();
+  stopOtherBandcampPlayers();
   overlay.classList.remove("hidden-overlay");
   overlay.classList.remove("nav-visible");
   overlay.classList.add("entering");
   overlay.setAttribute("aria-hidden", "false");
   requestAnimationFrame(() => {
     overlay.classList.add("overlay-visible");
+    mountSharedBandcampPlayer(overlay);
+    morphSharedBandcampPlayer(overlay, playerStartRect);
     requestAnimationFrame(() => {
       overlay.classList.remove("entering");
       updateDetailNavVisibility(overlay);
@@ -1170,6 +1177,9 @@ function showOverlay(overlay) {
 
 function hideOverlay(overlay) {
   if (!overlay) return;
+  if (overlay.classList.contains("detail-overlay") && overlay.id !== "aboutOverlay") {
+    mountSharedBandcampPlayerHome();
+  }
   overlay.classList.remove("nav-visible");
   if (overlay.classList.contains("detail-overlay") && overlay.id !== "aboutOverlay") {
     scheduleHomeVinylReveal();
@@ -1212,6 +1222,7 @@ function syncEventsHeaderState() {
 }
 
 function closeVisibleDetailOverlays() {
+  stopOtherBandcampPlayers();
   detailOverlays.forEach((overlay) => {
     if (!overlay) return;
     overlay.classList.remove(
@@ -1348,6 +1359,8 @@ function updateDetailNavPosition(overlay) {
 
 function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
   if (!currentOverlay || !nextOverlay || currentOverlay === nextOverlay || detailOverlaySwitching) return;
+  const playerStartRect = homeBandcampPlayer?.getBoundingClientRect();
+  stopOtherBandcampPlayers();
   detailOverlaySwitching = true;
   nextOverlay.classList.add("nav-visible");
   document.body.classList.add("carousel-sync");
@@ -1384,6 +1397,8 @@ function switchDetailOverlay(currentOverlay, nextOverlay, direction = 1) {
   nextOverlay.classList.add("overlay-visible", inClass);
   nextOverlay.setAttribute("aria-hidden", "false");
   nextOverlay.style.pointerEvents = "auto";
+  mountSharedBandcampPlayer(nextOverlay);
+  morphSharedBandcampPlayer(nextOverlay, playerStartRect);
   updateDetailNavVisibility(nextOverlay);
   requestAnimationFrame(() => updateDetailNavPosition(nextOverlay));
 
@@ -1546,6 +1561,137 @@ function setupDetailLyricsInteractions() {
   });
 }
 
+function buildBandcampTrackUrl(albumId, trackId) {
+  return `https://bandcamp.com/EmbeddedPlayer/album=${albumId}/track=${trackId}/size=small/bgcol=ffffff/linkcol=ff496b/tracklist=false/artwork=none/transparent=true/autoplay=1/`;
+}
+
+function buildBandcampAlbumUrl(albumId) {
+  return `https://bandcamp.com/EmbeddedPlayer/album=${albumId}/size=small/bgcol=ffffff/linkcol=ff496b/tracklist=false/artwork=none/transparent=true/`;
+}
+
+function syncBandcampPlayerToCenteredAlbum() {
+  if (!homeBandcampPlayer) return;
+
+  const centeredOverlay = detailOverlayOrder[activeIndex];
+  const albumFrame = centeredOverlay?.querySelector(
+    '.bandcamp-player:not(#homeBandcampPlayer)'
+  );
+  const albumId = albumFrame?.dataset.bandcampAlbum;
+  if (!albumId || homeBandcampPlayer.dataset.bandcampAlbum === albumId) return;
+
+  homeBandcampPlayer.dataset.bandcampAlbum = albumId;
+  homeBandcampPlayer.src = buildBandcampAlbumUrl(albumId);
+}
+
+function stopOtherBandcampPlayers(activePlayer = null) {
+  detailOverlays.forEach((overlay) => {
+    const player = overlay.querySelector(".bandcamp-player");
+    if (!player || player === activePlayer || player === homeBandcampPlayer) return;
+
+    const albumId = player.dataset.bandcampAlbum;
+    if (!albumId) return;
+
+    // Bandcamp's iframe is cross-origin, so reloading its paused album state
+    // is the reliable way to stop playback without exposing player internals.
+    player.src = buildBandcampAlbumUrl(albumId);
+    overlay.querySelectorAll(".detail-tracks li.is-selected").forEach((row) => {
+      row.classList.remove("is-selected");
+    });
+  });
+}
+
+function mountSharedBandcampPlayerHome() {
+  if (!homeBandcampPlayer || !homeBandcampPlayerShell) return;
+  homeBandcampPlayer.classList.remove("bandcamp-player");
+  homeBandcampPlayer.classList.add("home-bandcamp-player");
+  homeBandcampPlayer.removeAttribute("aria-hidden");
+  homeBandcampPlayerShell.appendChild(homeBandcampPlayer);
+}
+
+function morphSharedBandcampPlayer(overlay, startRect) {
+  // The player stays mounted in the fixed bottom-center shell on every page.
+}
+
+function requestBandcampPlayback(player) {
+  if (!player) return;
+
+  const sendPlayRequest = () => {
+    player.contentWindow?.postMessage("play", "https://bandcamp.com");
+    player.contentWindow?.postMessage({ command: "play" }, "https://bandcamp.com");
+    player.contentWindow?.postMessage({ method: "play" }, "https://bandcamp.com");
+  };
+
+  player.focus({ preventScroll: true });
+  sendPlayRequest();
+  window.setTimeout(sendPlayRequest, 120);
+  window.setTimeout(sendPlayRequest, 450);
+}
+
+function mountSharedBandcampPlayer(overlay) {
+  if (!homeBandcampPlayer || !overlay || !overlay.classList.contains("detail-overlay")) return;
+  const coverWrap = overlay.querySelector(".detail-cover-wrap");
+  if (!coverWrap) return;
+
+  const overlayPlayer = coverWrap.querySelector(
+    '.bandcamp-player:not(#homeBandcampPlayer)'
+  );
+  if (overlayPlayer?.dataset.bandcampAlbum) {
+    homeBandcampPlayer.dataset.bandcampAlbum = overlayPlayer.dataset.bandcampAlbum;
+  }
+  mountSharedBandcampPlayerHome();
+}
+
+function handoffBandcampPlayerToHome(overlay) {
+  if (!homeBandcampPlayer || !overlay) return;
+  mountSharedBandcampPlayerHome();
+  document.body.classList.add("home-player-visible");
+}
+
+function setupBandcampTrackSelection() {
+  detailOverlays.forEach((overlay) => {
+    const player = overlay.querySelector(".bandcamp-player");
+    const rows = Array.from(overlay.querySelectorAll(".detail-tracks li[data-track-id]"));
+    if (!player || !rows.length) return;
+
+    const selectTrack = (row, event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const trackId = row.dataset.trackId;
+      const activePlayer = homeBandcampPlayer || player;
+      const albumId = player.dataset.bandcampAlbum;
+      if (!trackId || !albumId) return;
+
+      stopOtherBandcampPlayers(activePlayer);
+      activePlayer.dataset.bandcampAlbum = albumId;
+      activePlayer.src = buildBandcampTrackUrl(albumId, trackId);
+      activePlayer.addEventListener(
+        "load",
+        () => {
+          requestBandcampPlayback(activePlayer);
+        },
+        { once: true }
+      );
+      requestBandcampPlayback(activePlayer);
+      rows.forEach((item) => {
+        const selected = item === row;
+        item.classList.toggle("is-selected", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+    };
+
+    rows.forEach((row) => {
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-pressed", "false");
+      row.addEventListener("click", (event) => selectTrack(row, event));
+      row.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") selectTrack(row, event);
+      });
+    });
+  });
+}
+
 function runSplashIntro() {
   if (!splashIntro) return;
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1572,6 +1718,8 @@ function runSplashIntro() {
 }
 
 function animateOpenOverlayFromCard(card, overlay) {
+  const playerStartRect = homeBandcampPlayer?.getBoundingClientRect();
+  stopOtherBandcampPlayers();
   const coverImage = card?.querySelector("img");
   const targetCover = overlay?.querySelector(".detail-cover");
   if (!coverImage || !overlay || !targetCover) {
@@ -1584,6 +1732,8 @@ function animateOpenOverlayFromCard(card, overlay) {
   overlay.classList.remove("nav-visible");
   overlay.classList.add("overlay-visible", "cover-animating");
   overlay.setAttribute("aria-hidden", "false");
+  mountSharedBandcampPlayer(overlay);
+  morphSharedBandcampPlayer(overlay, playerStartRect);
   updateDetailNavVisibility(overlay);
   requestAnimationFrame(() => updateDetailNavPosition(overlay));
   syncHeaderForAlbumOverlay();
@@ -1591,10 +1741,13 @@ function animateOpenOverlayFromCard(card, overlay) {
   const endRect = targetCover.getBoundingClientRect();
   const clone = coverImage.cloneNode(true);
   clone.classList.add("cover-transition-clone");
+  const startRadius = getComputedStyle(coverImage).borderRadius;
+  const endRadius = getComputedStyle(targetCover).borderRadius;
   clone.style.top = `${startRect.top}px`;
   clone.style.left = `${startRect.left}px`;
   clone.style.width = `${startRect.width}px`;
   clone.style.height = `${startRect.height}px`;
+  clone.style.borderRadius = startRadius;
   document.body.appendChild(clone);
 
   requestAnimationFrame(() => {
@@ -1602,7 +1755,7 @@ function animateOpenOverlayFromCard(card, overlay) {
     clone.style.left = `${endRect.left}px`;
     clone.style.width = `${endRect.width}px`;
     clone.style.height = `${endRect.height}px`;
-    clone.style.borderRadius = "14px";
+    clone.style.borderRadius = endRadius;
     clone.style.boxShadow = "0 30px 78px rgba(16, 18, 24, 0.34)";
   });
 
@@ -1621,6 +1774,8 @@ function animateCloseOverlayToHome(overlay) {
     hideOverlay(overlay);
     return;
   }
+
+  handoffBandcampPlayerToHome(overlay);
 
   const targetIndex = overlayToHomeIndex[overlay.id];
   if (typeof targetIndex !== "number") {
@@ -1649,11 +1804,13 @@ function animateCloseOverlayToHome(overlay) {
   const startRect = sourceCover.getBoundingClientRect();
   const clone = sourceCover.cloneNode(true);
   clone.classList.add("cover-transition-clone");
+  const startRadius = getComputedStyle(sourceCover).borderRadius;
+  const endRadius = getComputedStyle(targetImage).borderRadius;
   clone.style.top = `${startRect.top}px`;
   clone.style.left = `${startRect.left}px`;
   clone.style.width = `${startRect.width}px`;
   clone.style.height = `${startRect.height}px`;
-  clone.style.borderRadius = "14px";
+  clone.style.borderRadius = startRadius;
   clone.style.boxShadow = "0 30px 78px rgba(16, 18, 24, 0.34)";
   document.body.appendChild(clone);
 
@@ -1668,7 +1825,7 @@ function animateCloseOverlayToHome(overlay) {
     clone.style.left = `${endRect.left}px`;
     clone.style.width = `${endRect.width}px`;
     clone.style.height = `${endRect.height}px`;
-    clone.style.borderRadius = "2px";
+    clone.style.borderRadius = endRadius;
     clone.style.boxShadow = "0 24px 54px rgba(10, 12, 18, 0.45)";
   });
 
@@ -2173,7 +2330,7 @@ detailOverlays.forEach((overlay) => {
   });
 });
 
-setupDetailLyricsInteractions();
+setupBandcampTrackSelection();
 
 async function initSpotify() {
   setDefaultPlayerMeta();

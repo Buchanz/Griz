@@ -516,7 +516,7 @@ body.menu-open .menu-line.bottom {
   --home-cover-size: clamp(200px, 29vw, 330px);
   width: 100%;
   height: 100%;
-  margin-top: clamp(10rem, 24vh, 15rem);
+  margin-top: clamp(9.25rem, 21.5vh, 13.75rem);
   position: relative;
 }
 
@@ -657,7 +657,7 @@ body.menu-open .menu-line.bottom {
 
 .player-cover {
   width: 40px;
-  height: 40px;
+  height: 44px;
   border-radius: 8px;
   object-fit: cover;
   box-shadow: 0 8px 18px rgba(18, 30, 44, 0.22);
@@ -1342,7 +1342,7 @@ body.theme-dark .detail-tracks li {
   z-index: 160;
   object-fit: cover;
   pointer-events: none;
-  border-radius: 2px;
+  border-radius: 8px;
   box-shadow: 0 24px 54px rgba(10, 12, 18, 0.45);
   transition:
     top 0.52s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1544,6 +1544,8 @@ body.theme-dark .detail-tracks li {
   display: grid;
   place-content: center;
   justify-items: center;
+  position: relative;
+  top: 34px;
   transform: scale(1);
   opacity: 1;
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
@@ -1670,6 +1672,90 @@ body.theme-dark .detail-tracks li {
   overflow-x: hidden;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 8px, #000 calc(100% - 40px), transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 8px, #000 calc(100% - 40px), transparent 100%);
+}
+
+.detail-audio-column {
+  height: var(--cover-size);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.bandcamp-player {
+  display: block;
+  width: var(--cover-size);
+  height: 72px;
+  margin-top: 0.7rem;
+  border: 0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.detail-cover-wrap > .bandcamp-player:not(#homeBandcampPlayer) {
+  display: none;
+}
+
+/* The shared iframe is moved into the album layout; never let the home-shell
+   visibility rule hide it after that handoff. */
+.detail-cover-wrap > #homeBandcampPlayer.bandcamp-player {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  position: relative;
+  z-index: 4;
+}
+
+.home-bandcamp-player-shell {
+  position: fixed;
+  z-index: 260;
+  left: 50%;
+  bottom: clamp(0.7rem, 1.8vw, 1.2rem);
+  width: clamp(200px, 29vw, 330px);
+  height: 44px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(158, 168, 178, 0.42);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(10, 12, 18, 0.2);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+body.home-player-visible .home-bandcamp-player-shell {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+body.splash-active .home-bandcamp-player-shell,
+body.splash-hold .home-bandcamp-player-shell {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.home-bandcamp-player {
+  display: block;
+  width: 100%;
+  height: 44px;
+  min-height: 0;
+  max-height: 44px;
+  border: 0;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.detail-audio-column {
+  display: block;
+}
+
+.detail-audio-column .detail-tracks {
+  height: var(--cover-size);
+  align-self: stretch;
 }
 
 .detail-tracks li {
@@ -1991,7 +2077,7 @@ body.theme-dark .detail-tracks li {
 
   .carousel {
     --home-cover-size: clamp(220px, 52vw, 340px);
-    margin-top: clamp(5.2rem, 11vh, 7.4rem);
+    margin-top: clamp(4.8rem, 9vh, 6.5rem);
   }
 
   .album-track {
@@ -2167,6 +2253,7 @@ body.theme-dark .detail-tracks li {
   .detail-cover-wrap {
     min-height: auto;
     place-content: center;
+    top: 18px;
   }
 
   .detail-cover {
@@ -2178,6 +2265,26 @@ body.theme-dark .detail-tracks li {
     padding-bottom: 1.8rem;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+  }
+
+  .detail-audio-column {
+    height: auto;
+  }
+
+  .detail-audio-column .detail-tracks {
+    height: min(52svh, var(--cover-size));
+  }
+
+  .bandcamp-player {
+    width: min(var(--cover-size), 100%);
+    height: 68px;
+  }
+
+  .home-bandcamp-player-shell {
+    left: 50%;
+    width: min(clamp(220px, 52vw, 340px), calc(100vw - 1.6rem));
+    height: 44px;
+    bottom: 0.7rem;
   }
 
   .detail-close {
